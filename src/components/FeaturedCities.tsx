@@ -1,6 +1,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cities } from '@/data/propertyData';
 import { MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import khobarImage from '@/assets/city-khobar.jpg';
 import dammamImage from '@/assets/city-dammam.jpg';
 import dhahranImage from '@/assets/city-dhahran.jpg';
@@ -135,10 +136,12 @@ const FeaturedCities = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <button className="btn-outline group">
-            {isRTL ? 'عرض جميع المدن' : 'View All Cities'}
-            <ArrowIcon className="h-5 w-5 mr-2 transition-transform group-hover:translate-x-1" />
-          </button>
+          <Link to="/cities">
+            <button className="btn-outline group whitespace-nowrap">
+              <span>{isRTL ? 'عرض جميع المدن' : 'View All Cities'}</span>
+              <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+            </button>
+          </Link>
         </div>
       </div>
     </section>

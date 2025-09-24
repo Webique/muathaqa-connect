@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Globe, Menu, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useLocation } from 'react-router-dom';
+import logoImage from '@/assets/logo.png';
 
 const Header = () => {
   const { language, setLanguage, t, isRTL } = useLanguage();
@@ -50,25 +51,12 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 transition-smooth hover:scale-105">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">م</span>
-            </div>
-            <div className="hidden sm:block">
-              <div className={`font-bold text-lg ${isRTL ? 'text-right' : 'text-left'}`}>
-                {isRTL ? (
-                  <>
-                    <div className="text-secondary text-sm">مؤسسة مواثقة العقارية</div>
-                    <div className="text-xs text-muted-foreground">Muathaqa Real Estate</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-secondary text-sm">Muathaqa Real Estate</div>
-                    <div className="text-xs text-muted-foreground">مؤسسة مواثقة العقارية</div>
-                  </>
-                )}
-              </div>
-            </div>
+          <Link to="/" className="flex items-center transition-smooth hover:scale-105">
+            <img 
+              src={logoImage} 
+              alt="Muathaqa Real Estate" 
+              className="h-16 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}

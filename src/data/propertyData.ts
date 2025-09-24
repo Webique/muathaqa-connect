@@ -120,6 +120,22 @@ export const propertyTypes = [
   { key: 'commercial', ar: 'تجاري', en: 'Commercial' },
 ];
 
+export const buildingTypes = [
+  { key: 'all', ar: 'الكل', en: 'All' },
+  { key: 'villa', ar: 'فيلا', en: 'Villa' },
+  { key: 'apartment_tower', ar: 'شقة في برج', en: 'Apartment in a tower' },
+  { key: 'apartment_building', ar: 'شقة في مبنى', en: 'Apartment in a Building' },
+  { key: 'land', ar: 'أرض', en: 'Land' },
+  { key: 'townhouse', ar: 'تاون هاوس', en: 'Townhouse' },
+  { key: 'mansion', ar: 'قصر', en: 'Mansion' },
+  { key: 'farm', ar: 'مزرعة', en: 'Farm' },
+  { key: 'istraha', ar: 'استراحة', en: 'Istraha' },
+  { key: 'store', ar: 'محل', en: 'Store' },
+  { key: 'office', ar: 'مكتب', en: 'Office' },
+  { key: 'resort', ar: 'منتجع', en: 'Resort' },
+  { key: 'showroom', ar: 'صالة عرض', en: 'Showroom' },
+];
+
 export const statistics = [
   { key: 'contracts', value: 233, ar: 'العقود الموثقة حتى الآن', en: 'Documented Contracts' },
   { key: 'real_estate', value: 916, ar: 'العقود العقارية', en: 'Real Estate Contracts' },
@@ -163,6 +179,132 @@ export const services = [
     description: {
       ar: 'تسجيل رسمي عبر منصة إيجار الإلكترونية، تحديث/إنهاء العقود عند الحاجة، ربط العقد بالهوية الوطنية',
       en: 'Official registration via Ejar electronic platform, contract updates/termination when needed, linking contracts to national identity'
+    }
+  }
+];
+
+export const properties = [
+  {
+    id: 1,
+    title: {
+      ar: 'فيلا في حي الملقا',
+      en: 'Villa in Al Malqa Dist.'
+    },
+    location: {
+      ar: 'الرياض، المملكة العربية السعودية',
+      en: 'Riyadh, Saudi Arabia'
+    },
+    images: [
+      '/src/assets/hero-real-estate.jpg',
+      '/src/assets/hero-real-estate.jpg',
+      '/src/assets/hero-real-estate.jpg',
+      '/src/assets/hero-real-estate.jpg'
+    ],
+    price: 8000000,
+    area: 600,
+    bedrooms: 6,
+    bathrooms: 3,
+    type: 'villa',
+    purpose: 'sale',
+    features: {
+      floors: 3,
+      guestLounge: 2,
+      facade: 'North',
+      streetWidthNorth: 15,
+      dailyLivingRoom: 3,
+      diningRoom: 3,
+      maidRoom: 1,
+      driverRoom: 1,
+      kitchen: 3,
+      storageRoom: 1,
+      elevator: 1
+    },
+    services: ['Electricity', 'Water', 'Sewage'],
+    usage: 'Residential',
+    advertiser: {
+      number: '7200640143',
+      license: '1200027687'
+    }
+  },
+  {
+    id: 2,
+    title: {
+      ar: 'شقة في برج الفردوس',
+      en: 'Apartment in Al Ferdous Tower'
+    },
+    location: {
+      ar: 'الخبر، المملكة العربية السعودية',
+      en: 'Khobar, Saudi Arabia'
+    },
+    images: [
+      '/src/assets/city-khobar.jpg',
+      '/src/assets/city-khobar.jpg',
+      '/src/assets/city-khobar.jpg'
+    ],
+    price: 2500000,
+    area: 180,
+    bedrooms: 3,
+    bathrooms: 2,
+    type: 'apartment_tower',
+    purpose: 'sale',
+    features: {
+      floors: 1,
+      guestLounge: 1,
+      facade: 'East',
+      streetWidthNorth: 12,
+      dailyLivingRoom: 1,
+      diningRoom: 1,
+      maidRoom: 0,
+      driverRoom: 0,
+      kitchen: 1,
+      storageRoom: 1,
+      elevator: 1
+    },
+    services: ['Electricity', 'Water', 'Sewage', 'Gas'],
+    usage: 'Residential',
+    advertiser: {
+      number: '7200640143',
+      license: '1200027687'
+    }
+  },
+  {
+    id: 3,
+    title: {
+      ar: 'أرض سكنية في حي النهضة',
+      en: 'Residential Land in Al Nahda Dist.'
+    },
+    location: {
+      ar: 'الدمام، المملكة العربية السعودية',
+      en: 'Dammam, Saudi Arabia'
+    },
+    images: [
+      '/src/assets/city-dammam.jpg',
+      '/src/assets/city-dammam.jpg'
+    ],
+    price: 1200000,
+    area: 800,
+    bedrooms: 0,
+    bathrooms: 0,
+    type: 'land',
+    purpose: 'sale',
+    features: {
+      floors: 0,
+      guestLounge: 0,
+      facade: 'South',
+      streetWidthNorth: 20,
+      dailyLivingRoom: 0,
+      diningRoom: 0,
+      maidRoom: 0,
+      driverRoom: 0,
+      kitchen: 0,
+      storageRoom: 0,
+      elevator: 0
+    },
+    services: ['Electricity', 'Water', 'Sewage'],
+    usage: 'Residential',
+    advertiser: {
+      number: '7200640143',
+      license: '1200027687'
     }
   }
 ];

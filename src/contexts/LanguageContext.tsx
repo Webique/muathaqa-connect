@@ -28,11 +28,13 @@ const translations = {
     'search.district': 'الحي',
     'search.purpose': 'الغرض',
     'search.type': 'نوع العقار',
+    'search.buildingType': 'نوع البناء',
     'search.button': 'بحث',
     'search.placeholder.city': 'اختر المدينة',
     'search.placeholder.district': 'اختر الحي',
     'search.placeholder.purpose': 'اختر الغرض',
     'search.placeholder.type': 'اختر النوع',
+    'search.placeholder.buildingType': 'اختر نوع البناء',
     
     // Purposes
     'purpose.sale': 'للبيع',
@@ -88,6 +90,75 @@ const translations = {
     'contact.email': 'البريد الإلكتروني',
     'contact.address': 'العنوان',
     'contact.location': 'المنطقة الشرقية - محافظة الخبر - حي الشراع - شارع ربيعة بن السكن',
+
+    // Cities Page
+    'cities.title': 'جميع العقارات',
+    'cities.subtitle': 'اكتشف مجموعة واسعة من العقارات السكنية والتجارية في المنطقة الشرقية',
+    'cities.results': 'نتائج البحث',
+    'cities.searching': 'جاري البحث...',
+    'cities.propertiesFound': 'عقار متاح',
+    'cities.clearFilters': 'مسح الفلاتر',
+    'cities.noResults': 'لا توجد نتائج',
+    'cities.noResultsDescription': 'جرب تعديل فلاتر البحث أو مسحها للعثور على المزيد من العقارات',
+    'cities.loadMore': 'تحميل المزيد',
+    'cities.sqm': 'م²',
+    'cities.currency': 'ريال سعودي',
+
+    // Property Detail Page
+    'property.backToProperties': 'العودة للعقارات',
+    'property.notFound': 'العقار غير موجود',
+    'property.sellingPrice': 'سعر البيع',
+    'property.facts': 'البيانات الأساسية',
+    'property.features': 'المميزات',
+    'property.services': 'الخدمات',
+    'property.usage': 'الاستخدام',
+    'property.advertiserDetails': 'تفاصيل المعلن',
+    'property.advertiserNumber': 'رقم المعلن',
+    'property.licenseNumber': 'رقم الترخيص',
+    'property.location': 'الموقع',
+    'property.contactUs': 'تواصل معنا',
+
+    // Property Filters
+    'filters.title': 'فلاتر البحث',
+    'filters.showFilters': 'إظهار الفلاتر',
+    'filters.hideFilters': 'إخفاء الفلاتر',
+    'filters.clearAll': 'مسح الكل',
+    'filters.minPrice': 'السعر الأدنى',
+    'filters.maxPrice': 'السعر الأعلى',
+    'filters.minArea': 'المساحة الأدنى',
+    'filters.maxArea': 'المساحة الأعلى',
+    'filters.bedrooms': 'غرف النوم',
+    'filters.bathrooms': 'الحمامات',
+    'filters.bedroomsPlaceholder': 'عدد الغرف',
+    'filters.bathroomsPlaceholder': 'عدد الحمامات',
+
+    // Common
+    'common.bedrooms': 'غرف نوم',
+    'common.bathrooms': 'حمامات',
+    'common.area': 'المساحة',
+    'common.price': 'السعر',
+
+    // Property Features
+    'feature.floors': 'الطوابق',
+    'feature.guestLounge': 'صالة الضيوف',
+    'feature.facade': 'الواجهة',
+    'feature.streetWidthNorth': 'عرض الشارع الشمالي',
+    'feature.dailyLivingRoom': 'غرفة المعيشة اليومية',
+    'feature.diningRoom': 'غرفة الطعام',
+    'feature.maidRoom': 'غرفة الخادمة',
+    'feature.driverRoom': 'غرفة السائق',
+    'feature.kitchen': 'المطبخ',
+    'feature.storageRoom': 'غرفة التخزين',
+    'feature.elevator': 'المصعد',
+
+    // Property Features Values
+    'featureValue.north': 'شمال',
+    'featureValue.south': 'جنوب',
+    'featureValue.east': 'شرق',
+    'featureValue.west': 'غرب',
+
+    // Image Navigation
+    'image.thumbnail': 'صورة مصغرة',
   },
   en: {
     // Header
@@ -107,11 +178,13 @@ const translations = {
     'search.district': 'District',
     'search.purpose': 'Purpose',
     'search.type': 'Property Type',
+    'search.buildingType': 'Building Type',
     'search.button': 'Search',
     'search.placeholder.city': 'Select City',
     'search.placeholder.district': 'Select District',
     'search.placeholder.purpose': 'Select Purpose',
     'search.placeholder.type': 'Select Type',
+    'search.placeholder.buildingType': 'Select Building Type',
     
     // Purposes
     'purpose.sale': 'For Sale',
@@ -167,6 +240,75 @@ const translations = {
     'contact.email': 'Email',
     'contact.address': 'Address',
     'contact.location': 'Eastern Province - Khobar Governorate - Al-Shira District - Rabia bin Al-Sakan Street',
+
+    // Cities Page
+    'cities.title': 'All Properties',
+    'cities.subtitle': 'Discover a wide range of residential and commercial properties in the Eastern Province',
+    'cities.results': 'Search Results',
+    'cities.searching': 'Searching...',
+    'cities.propertiesFound': 'properties found',
+    'cities.clearFilters': 'Clear Filters',
+    'cities.noResults': 'No Results Found',
+    'cities.noResultsDescription': 'Try adjusting your search filters or clearing them to find more properties',
+    'cities.loadMore': 'Load More',
+    'cities.sqm': 'Sq m',
+    'cities.currency': 'SAR',
+
+    // Property Detail Page
+    'property.backToProperties': 'Back to Properties',
+    'property.notFound': 'Property Not Found',
+    'property.sellingPrice': 'Selling Price',
+    'property.facts': 'Facts',
+    'property.features': 'Features',
+    'property.services': 'Services',
+    'property.usage': 'Usage',
+    'property.advertiserDetails': 'Advertiser Details',
+    'property.advertiserNumber': 'Advertiser Number',
+    'property.licenseNumber': 'License Number',
+    'property.location': 'Location',
+    'property.contactUs': 'Contact Us',
+
+    // Property Filters
+    'filters.title': 'Search Filters',
+    'filters.showFilters': 'Show Filters',
+    'filters.hideFilters': 'Hide Filters',
+    'filters.clearAll': 'Clear All',
+    'filters.minPrice': 'Min Price',
+    'filters.maxPrice': 'Max Price',
+    'filters.minArea': 'Min Area',
+    'filters.maxArea': 'Max Area',
+    'filters.bedrooms': 'Bedrooms',
+    'filters.bathrooms': 'Bathrooms',
+    'filters.bedroomsPlaceholder': 'Number of rooms',
+    'filters.bathroomsPlaceholder': 'Number of bathrooms',
+
+    // Common
+    'common.bedrooms': 'Bedrooms',
+    'common.bathrooms': 'Bathrooms',
+    'common.area': 'Area',
+    'common.price': 'Price',
+
+    // Property Features
+    'feature.floors': 'Floors',
+    'feature.guestLounge': 'Guest Lounge',
+    'feature.facade': 'Facade',
+    'feature.streetWidthNorth': 'Street Width North',
+    'feature.dailyLivingRoom': 'Daily Living Room',
+    'feature.diningRoom': 'Dining Room',
+    'feature.maidRoom': 'Maid Room',
+    'feature.driverRoom': 'Driver Room',
+    'feature.kitchen': 'Kitchen',
+    'feature.storageRoom': 'Storage Room',
+    'feature.elevator': 'Elevator',
+
+    // Property Features Values
+    'featureValue.north': 'North',
+    'featureValue.south': 'South',
+    'featureValue.east': 'East',
+    'featureValue.west': 'West',
+
+    // Image Navigation
+    'image.thumbnail': 'Thumbnail',
   }
 };
 
