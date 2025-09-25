@@ -27,9 +27,13 @@ const PropertyFilters = () => {
   // Add helper function to get filtered building types
   const getFilteredBuildingTypes = () => {
     if (filters.type === 'commercial') {
-      // For commercial properties, only show land and building
+      // For commercial properties, only show specific commercial building types
       return buildingTypes.filter(type => 
-        type.key === 'all' || type.key === 'land' || type.key === 'building'
+        type.key === 'land' || 
+        type.key === 'building' || 
+        type.key === 'office' || 
+        type.key === 'store' || 
+        type.key === 'showroom'
       );
     }
     // For residential or no selection, show all building types
@@ -39,10 +43,12 @@ const PropertyFilters = () => {
   const handleTypeChange = (typeKey: string) => {
     updateFilter('type', typeKey);
     
-    // Reset building type if it's not available for the new property type
-    if (typeKey === 'commercial' && filters.buildingType && 
-        !['all', 'land', 'building'].includes(filters.buildingType)) {
-      updateFilter('buildingType', '');
+    // Immediately clear building type when switching to commercial if current selection is not valid
+    if (typeKey === 'commercial') {
+      if (filters.buildingType && 
+          !['land', 'building', 'office', 'store', 'showroom'].includes(filters.buildingType)) {
+        updateFilter('buildingType', '');
+      }
     }
   };
 

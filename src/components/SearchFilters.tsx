@@ -22,6 +22,34 @@ const SearchFilters = ({ className = '', variant = 'hero' }: SearchFiltersProps)
     updateFilter('district', ''); // Reset district when city changes
   };
 
+  // Add helper function to get filtered building types
+  const getFilteredBuildingTypes = () => {
+    if (filters.type === 'commercial') {
+      // For commercial properties, only show specific commercial building types
+      return buildingTypes.filter(type => 
+        type.key === 'land' || 
+        type.key === 'building' || 
+        type.key === 'office' || 
+        type.key === 'store' || 
+        type.key === 'showroom'
+      );
+    }
+    // For residential or no selection, show all building types
+    return buildingTypes;
+  };
+
+  const handleTypeChange = (typeKey: string) => {
+    updateFilter('type', typeKey);
+    
+    // Immediately clear building type when switching to commercial if current selection is not valid
+    if (typeKey === 'commercial') {
+      if (filters.buildingType && 
+          !['land', 'building', 'office', 'store', 'showroom'].includes(filters.buildingType)) {
+        updateFilter('buildingType', '');
+      }
+    }
+  };
+
   const handleSearch = () => {
     performSearch();
     navigate('/cities');
@@ -65,17 +93,13 @@ const SearchFilters = ({ className = '', variant = 'hero' }: SearchFiltersProps)
           <label className="text-sm font-medium text-muted-foreground">
             {t('search.district')}
           </label>
-          <Select 
-            value={filters.district} 
-            onValueChange={(value) => updateFilter('district', value)}
-            disabled={!filters.city}
-          >
+          <Select value={filters.district} onValueChange={(value) => updateFilter('district', value)}>
             <SelectTrigger className="h-12 bg-background border-border">
               <SelectValue placeholder={t('search.placeholder.district')} />
             </SelectTrigger>
             <SelectContent className="z-50" side="bottom">
-              {getDistrictsForCity().map((district, index) => (
-                <SelectItem key={index} value={isRTL ? district.ar : district.en}>
+              {getDistrictsForCity().map((district) => (
+                <SelectItem key={district.en} value={district.en}>
                   {isRTL ? district.ar : district.en}
                 </SelectItem>
               ))}
@@ -107,7 +131,7 @@ const SearchFilters = ({ className = '', variant = 'hero' }: SearchFiltersProps)
           <label className="text-sm font-medium text-muted-foreground">
             {t('search.type')}
           </label>
-          <Select value={filters.type} onValueChange={(value) => updateFilter('type', value)}>
+          <Select value={filters.type} onValueChange={handleTypeChange}>
             <SelectTrigger className="h-12 bg-background border-border">
               <SelectValue placeholder={t('search.placeholder.type')} />
             </SelectTrigger>
@@ -137,7 +161,7 @@ const SearchFilters = ({ className = '', variant = 'hero' }: SearchFiltersProps)
               position="popper"
               avoidCollisions={false}
             >
-              {buildingTypes.map((buildingType) => (
+              {getFilteredBuildingTypes().map((buildingType) => (
                 <SelectItem key={buildingType.key} value={buildingType.key}>
                   {isRTL ? buildingType.ar : buildingType.en}
                 </SelectItem>
@@ -148,17 +172,16 @@ const SearchFilters = ({ className = '', variant = 'hero' }: SearchFiltersProps)
 
         {/* Search Button */}
         <div className="space-y-2 md:col-span-2 lg:col-span-3 xl:col-span-1">
-          <label className="text-sm font-medium text-transparent">
-            {/* Spacer for alignment */}
-            Search
+          <label className="text-sm font-medium text-muted-foreground opacity-0">
+            {t('search.search')}
           </label>
           <Button 
             onClick={handleSearch}
             disabled={isSearching}
-            className="w-full h-12 bg-secondary hover:bg-secondary-hover text-secondary-foreground font-medium transition-smooth hover:scale-105"
+            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
           >
-            <Search className="h-5 w-5 mr-2" />
-            {isSearching ? (isRTL ? 'جاري البحث...' : 'Searching...') : t('search.button')}
+            <Search className="h-4 w-4 mr-2" />
+            {isSearching ? t('search.searching') : t('search.search')}
           </Button>
         </div>
       </div>
