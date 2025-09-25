@@ -24,6 +24,28 @@ const PropertyFilters = () => {
     return cities[filters.city as keyof typeof cities].districts;
   };
 
+  // Add helper function to get filtered building types
+  const getFilteredBuildingTypes = () => {
+    if (filters.type === 'commercial') {
+      // For commercial properties, only show land and building
+      return buildingTypes.filter(type => 
+        type.key === 'all' || type.key === 'land' || type.key === 'building'
+      );
+    }
+    // For residential or no selection, show all building types
+    return buildingTypes;
+  };
+
+  const handleTypeChange = (typeKey: string) => {
+    updateFilter('type', typeKey);
+    
+    // Reset building type if it's not available for the new property type
+    if (typeKey === 'commercial' && filters.buildingType && 
+        !['all', 'land', 'building'].includes(filters.buildingType)) {
+      updateFilter('buildingType', '');
+    }
+  };
+
   const hasActiveFilters = filters.city || filters.district || filters.purpose || filters.type || filters.buildingType || filters.minPrice || filters.maxPrice || filters.minArea || filters.maxArea || filters.bedrooms || filters.bathrooms;
 
   return (
@@ -125,7 +147,7 @@ const PropertyFilters = () => {
             <label className="text-sm font-medium text-muted-foreground">
               {t('search.type')}
             </label>
-            <Select value={filters.type} onValueChange={(value) => updateFilter('type', value)}>
+            <Select value={filters.type} onValueChange={handleTypeChange}>
               <SelectTrigger className="h-10">
                 <SelectValue placeholder={t('search.placeholder.type')} />
               </SelectTrigger>
@@ -149,7 +171,7 @@ const PropertyFilters = () => {
                 <SelectValue placeholder={t('search.placeholder.buildingType')} />
               </SelectTrigger>
               <SelectContent className="z-50" side="bottom">
-                {buildingTypes.map((buildingType) => (
+                {getFilteredBuildingTypes().map((buildingType) => (
                   <SelectItem key={buildingType.key} value={buildingType.key}>
                     {isRTL ? buildingType.ar : buildingType.en}
                   </SelectItem>

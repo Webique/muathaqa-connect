@@ -90,6 +90,22 @@ export const cities = {
       { ar: 'النهضة', en: 'Al-Nahda' },
       { ar: 'الصالحية', en: 'Al-Salihiya' },
     ]
+  },
+  mubarraz: {
+    ar: 'المبرز',
+    en: 'Mubarraz',
+    districts: [
+      { ar: 'الحزم', en: 'Al-Hazm' },
+      { ar: 'الراشدية', en: 'Al-Rashidiya' },
+    ]
+  },
+  oyoun: {
+    ar: 'العيون',
+    en: 'Oyoun',
+    districts: [
+      { ar: 'المركز', en: 'Center' },
+      { ar: 'الشمالية', en: 'North' },
+    ]
   }
 };
 
@@ -110,7 +126,6 @@ export const buildingTypes = [
   { key: 'apartment_tower', ar: 'شقة في برج', en: 'Apartment in a tower' },
   { key: 'apartment_building', ar: 'شقة في مبنى', en: 'Apartment in a Building' },
   { key: 'land', ar: 'أرض', en: 'Land' },
-  { key: 'building', ar: 'عمارة', en: 'Building' },
   { key: 'townhouse', ar: 'تاون هاوس', en: 'Townhouse' },
   { key: 'mansion', ar: 'قصر', en: 'Mansion' },
   { key: 'farm', ar: 'مزرعة', en: 'Farm' },
@@ -179,16 +194,12 @@ export const properties = [
       ar: 'الرياض، المملكة العربية السعودية',
       en: 'Riyadh, Saudi Arabia'
     },
-    propertyCode: 'MU-001',
     images: [
       '/src/assets/hero-real-estate.jpg',
-      '/src/assets/city-dammam.jpg',
-      '/src/assets/city-dhahran.jpg',
-      '/src/assets/city-jubail.jpg',
-      '/src/assets/city-khobar.jpg',
+      '/src/assets/hero-real-estate.jpg',
+      '/src/assets/hero-real-estate.jpg',
       '/src/assets/hero-real-estate.jpg'
     ],
-    video: '/src/assets/property-video.mp4',
     price: 8000000,
     area: 600,
     bedrooms: 6,
@@ -225,7 +236,6 @@ export const properties = [
       ar: 'الخبر، المملكة العربية السعودية',
       en: 'Khobar, Saudi Arabia'
     },
-    propertyCode: 'MU-002',
     images: [
       '/src/assets/city-khobar.jpg',
       '/src/assets/city-khobar.jpg',
@@ -267,7 +277,6 @@ export const properties = [
       ar: 'الدمام، المملكة العربية السعودية',
       en: 'Dammam, Saudi Arabia'
     },
-    propertyCode: 'MU-003',
     images: [
       '/src/assets/city-dammam.jpg',
       '/src/assets/city-dammam.jpg'
