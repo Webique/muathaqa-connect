@@ -116,7 +116,7 @@ const translations = {
     'property.advertiserDetails': 'تفاصيل المعلن',
     'property.propertyCode': 'كود العقار',
     'property.advertiserNumber': 'رقم المعلن',
-    'property.licenseNumber': 'رقم الترخيص',
+    'property.licenseNumber': 'رخصة فال',
     'property.location': 'الموقع',
     'property.contactUs': 'تواصل معنا',
 
