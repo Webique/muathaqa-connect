@@ -175,6 +175,9 @@ const AdminPage: React.FC = () => {
         }
       };
 
+      // Debug: Log the data being sent
+      console.log('Sending property data:', JSON.stringify(propertyData, null, 2));
+
       if (editingProperty) {
         await apiService.updateProperty(editingProperty._id, propertyData);
         toast.success('Property updated successfully!');

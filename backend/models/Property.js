@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const propertySchema = new mongoose.Schema({
   title: {
-    ar: { type: String, required: true },
+    ar: { type: String, required: false },
     en: { type: String, required: true }
   },
   location: {
-    ar: { type: String, required: true },
+    ar: { type: String, required: false },
     en: { type: String, required: true }
   },
   propertyCode: { 
