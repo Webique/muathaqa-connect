@@ -137,16 +137,17 @@ const AdminPage: React.FC = () => {
         ...(formData.video ? [formData.video] : [])
       ];
 
+      // Clean up empty strings and provide defaults
       const propertyData = {
         title: {
-          ar: formData.titleAr || formData.titleEn,
-          en: formData.titleEn
+          ar: formData.titleAr.trim() || formData.titleEn.trim(),
+          en: formData.titleEn.trim()
         },
         location: {
-          ar: formData.locationAr || formData.locationEn,
-          en: formData.locationEn || 'Saudi Arabia'
+          ar: formData.locationAr.trim() || formData.locationEn.trim() || 'Saudi Arabia',
+          en: formData.locationEn.trim() || 'Saudi Arabia'
         },
-        price: parseInt(formData.price),
+        price: parseInt(formData.price) || 0,
         area: parseInt(formData.area) || 0,
         bedrooms: parseInt(formData.bedrooms) || 0,
         bathrooms: parseInt(formData.bathrooms) || 0,
@@ -157,8 +158,8 @@ const AdminPage: React.FC = () => {
         video: allVideos.length > 0 ? allVideos[0] : undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
-          number: formData.advertiserNumber || '7200640143',
-          license: formData.advertiserLicense || '1200027687'
+          number: formData.advertiserNumber.trim() || '7200640143',
+          license: formData.advertiserLicense.trim() || '1200027687'
         },
         features: {
           floors: 1,
