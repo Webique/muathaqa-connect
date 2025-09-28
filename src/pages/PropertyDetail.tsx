@@ -14,19 +14,48 @@ import {
   Play
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { properties, buildingTypes, purposes } from '@/data/propertyData';
+import { apiService } from '@/services/api';
 import { Button } from '@/components/ui/button';
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const { t, isRTL } = useLanguage();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [property, setProperty] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    loadProperty();
+  }, [id]);
 
-  const property = properties.find(p => p.id === parseInt(id || '0'));
+  const loadProperty = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getProperty(id!);
+      if (response.success) {
+        setProperty(response.data);
+      } else {
+        setProperty(null);
+      }
+    } catch (error) {
+      console.error('Error loading property:', error);
+      setProperty(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading property...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -48,157 +77,176 @@ const PropertyDetail = () => {
   };
 
   const getBuildingTypeName = (type: string) => {
-    const buildingType = buildingTypes.find(bt => bt.key === type);
-    return buildingType ? (isRTL ? buildingType.ar : buildingType.en) : type;
+    const typeNames: { [key: string]: { ar: string; en: string } } = {
+      'villa': { ar: 'فيلا', en: 'Villa' },
+      'apartment_tower': { ar: 'شقة في برج', en: 'Apartment in Tower' },
+      'apartment_building': { ar: 'شقة في مبنى', en: 'Apartment in Building' },
+      'land': { ar: 'أرض', en: 'Land' },
+      'building': { ar: 'مبنى', en: 'Building' },
+      'townhouse': { ar: 'تاون هاوس', en: 'Townhouse' },
+      'mansion': { ar: 'قصر', en: 'Mansion' },
+      'farm': { ar: 'مزرعة', en: 'Farm' },
+      'istraha': { ar: 'استراحة', en: 'Istraha' },
+      'store': { ar: 'محل', en: 'Store' },
+      'office': { ar: 'مكتب', en: 'Office' },
+      'resort': { ar: 'منتجع', en: 'Resort' },
+      'showroom': { ar: 'صالة عرض', en: 'Showroom' }
+    };
+    return typeNames[type] ? (isRTL ? typeNames[type].ar : typeNames[type].en) : type;
   };
 
   const getPurposeName = (purpose: string) => {
-    const purposeObj = purposes.find(p => p.key === purpose);
-    return purposeObj ? (isRTL ? purposeObj.ar : purposeObj.en) : purpose;
+    const purposeNames: { [key: string]: { ar: string; en: string } } = {
+      'sale': { ar: 'للبيع', en: 'For Sale' },
+      'rent': { ar: 'للإيجار', en: 'For Rent' },
+      'investment': { ar: 'للاستثمار', en: 'For Investment' }
+    };
+    return purposeNames[purpose] ? (isRTL ? purposeNames[purpose].ar : purposeNames[purpose].en) : purpose;
   };
 
   const getFeatureName = (key: string) => {
-    const featureKey = `feature.${key}`;
-    return t(featureKey) !== featureKey ? t(featureKey) : key.replace(/([A-Z])/g, ' $1').trim();
+    const featureNames: { [key: string]: { ar: string; en: string } } = {
+      'floors': { ar: 'عدد الأدوار', en: 'Number of Floors' },
+      'guestLounge': { ar: 'المجالس', en: 'Guest Lounge' },
+      'facade': { ar: 'الواجهة', en: 'Facade' },
+      'streetWidthNorth': { ar: 'عرض الشارع', en: 'Street Width' },
+      'dailyLivingRoom': { ar: 'الصالات', en: 'Living Rooms' },
+      'diningRoom': { ar: 'غرفة الطعام', en: 'Dining Room' },
+      'maidRoom': { ar: 'غرفة الخادمة', en: 'Maid Room' },
+      'driverRoom': { ar: 'غرفة السائق', en: 'Driver Room' },
+      'kitchen': { ar: 'المطبخ', en: 'Kitchen' },
+      'storageRoom': { ar: 'غرفة التخزين', en: 'Storage Room' },
+      'elevator': { ar: 'المصعد', en: 'Elevator' },
+      'age': { ar: 'عمر العقار', en: 'Property Age' },
+      'apartments': { ar: 'عدد الشقق', en: 'Number of Apartments' },
+      'acSystem': { ar: 'نظام التكييف', en: 'AC System' },
+      'category': { ar: 'الفئة', en: 'Category' },
+      'planNumber': { ar: 'رقم المخطط', en: 'Plan Number' },
+      'blockNumber': { ar: 'رقم البلوك', en: 'Block Number' },
+      'parcelNumber': { ar: 'رقم القطعة', en: 'Parcel Number' },
+      'subdivision': { ar: 'التقسيم', en: 'Subdivision' },
+      'landClassification': { ar: 'تصنيف الأرض', en: 'Land Classification' },
+      'pricePerSqm': { ar: 'سعر المتر', en: 'Price per sqm' },
+      'allowedUsage': { ar: 'الاستعمال المسموح به', en: 'Allowed Usage' },
+      'maxBuildingHeight': { ar: 'الحد الأقصى لارتفاع المبنى', en: 'Max Building Height' },
+      'scale': { ar: 'الميزان', en: 'Scale' },
+      'scaleArea': { ar: 'مساحة الميزان', en: 'Scale Area' },
+      'shops': { ar: 'عدد المحلات', en: 'Number of Shops' },
+      'meters': { ar: 'عدد العدادات', en: 'Number of Meters' }
+    };
+    return featureNames[key] ? (isRTL ? featureNames[key].ar : featureNames[key].en) : key.replace(/([A-Z])/g, ' $1').trim();
   };
 
   const getFeatureValue = (key: string, value: string | number) => {
-    if (key === 'facade') {
-      const valueKey = `featureValue.${value.toString().toLowerCase()}`;
-      return t(valueKey) !== valueKey ? t(valueKey) : value;
-    }
-    return value;
-  };
-
-  const nextImage = () => {
-    const totalItems = property.video ? property.images.length + 1 : property.images.length;
-    setCurrentImageIndex((prev) => 
-      prev === totalItems - 1 ? 0 : prev + 1
-    );
-  };
-
-  const prevImage = () => {
-    const totalItems = property.video ? property.images.length + 1 : property.images.length;
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? totalItems - 1 : prev - 1
-    );
-  };
-
-  const goToImage = (index: number) => {
-    setCurrentImageIndex(index);
+    if (value === 0 || value === '' || value === null || value === undefined) return 'N/A';
+    return value.toString();
   };
 
   const openGoogleMaps = () => {
-    const location = isRTL ? property.location.ar : property.location.en;
-    const encodedLocation = encodeURIComponent(location);
-    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
-    window.open(googleMapsUrl, "_blank");
+    const address = encodeURIComponent(isRTL ? property.location.ar : property.location.en);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Back Button */}
-      <div className="container mx-auto px-4 pt-32 pb-8">
-        <Link 
-          to="/cities" 
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>{t('property.backToProperties')}</span>
-        </Link>
-      </div>
-
-      <div className="container mx-auto px-4 pb-8">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Image Slideshow */}
-            <div className="relative bg-card rounded-2xl overflow-hidden">
-              <div className="relative h-96 lg:h-[500px]">
-                {/* Main Image/Video Display */}
-                {property.video && currentImageIndex === 0 ? (
-                  <video
-                    src={property.video}
-                    className="w-full h-full object-cover"
-                    controls
-                    poster={property.images[0]}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <img
-                    src={property.images[property.video ? currentImageIndex - 1 : currentImageIndex]}
-                    alt={`${isRTL ? property.title.ar : property.title.en} - ${currentImageIndex + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-                
-                {/* Navigation Arrows */}
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full p-2 transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full p-2 transition-colors"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-
-                {/* Image Counter */}
-                <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full text-sm">
-                  {property.video && currentImageIndex === 0 ? 'Video' : `${currentImageIndex + 1} / ${property.video ? property.images.length + 1 : property.images.length}`}
-                </div>
-              </div>
-              {/* Thumbnail Navigation */}
-              <div className="p-4 flex gap-2 overflow-x-auto">
-                {/* Video Thumbnail */}
-                {property.video && (
-                  <button
-                    onClick={() => goToImage(0)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                      currentImageIndex === 0 
-                        ? 'border-primary' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="w-full h-full bg-primary/20 flex items-center justify-center">
-                      <Play className="h-6 w-6 text-primary" />
-                    </div>
-                  </button>
-                )}
-                {/* Image Thumbnails */}
-                {property.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToImage(property.video ? index + 1 : index)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                      (property.video ? index + 1 : index) === currentImageIndex 
-                        ? 'border-primary' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${t('image.thumbnail')} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Property Title and Location */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{isRTL ? property.location.ar : property.location.en}</span>
+          <div className="lg:col-span-2 space-y-6">
+            {/* Property Title */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                <Link to="/cities" className="hover:text-primary transition-colors">
+                  {isRTL ? 'العقارات' : 'Properties'}
+                </Link>
+                <span>/</span>
+                <span>{getBuildingTypeName(property.type)}</span>
+                <span>/</span>
+                <span>{getPurposeName(property.purpose)}</span>
               </div>
               <h1 className="text-3xl font-bold text-foreground">
                 {getBuildingTypeName(property.type)} {getPurposeName(property.purpose)} - {isRTL ? property.title.ar : property.title.en}
               </h1>
+            </div>
+
+            {/* Image Gallery */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="relative">
+                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                  {property.images && property.images.length > 0 ? (
+                    <img
+                      src={property.images[currentImageIndex]}
+                      alt={isRTL ? property.title.ar : property.title.en}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-muted-foreground">No image available</span>
+                    </div>
+                  )}
+                </div>
+                
+                {property.images && property.images.length > 1 && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute left-4 top-1/2 -translate-y-1/2"
+                      onClick={prevImage}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute right-4 top-1/2 -translate-y-1/2"
+                      onClick={nextImage}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+
+                {property.video && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute bottom-4 right-4"
+                    onClick={() => window.open(property.video, '_blank')}
+                  >
+                    <Play className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Image Thumbnails */}
+              {property.images && property.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-2 mt-4">
+                  {property.images.slice(0, 4).map((image: string, index: number) => (
+                    <button
+                      key={index}
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                        index === currentImageIndex ? 'border-primary' : 'border-border'
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    >
+                      <img
+                        src={image}
+                        alt={`${isRTL ? property.title.ar : property.title.en} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Basic Data Section - Dynamic based on property type */}
@@ -210,248 +258,31 @@ const PropertyDetail = () => {
                 }
               </h2>
               
-              {/* Apartment Data */}
-              {property.type === 'apartment_tower' || property.type === 'apartment_building' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
-                    <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الدور:' : 'Floor:'}</span>
-                    <span className="font-medium">{property.features.floors || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عمر العقار:' : 'Property Age:'}</span>
-                    <span className="font-medium">{property.features.age || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'غرف النوم:' : 'Bedrooms:'}</span>
-                    <span className="font-medium">{property.bedrooms}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الصالات:' : 'Living Rooms:'}</span>
-                    <span className="font-medium">{property.features.dailyLivingRoom || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'دورات المياه:' : 'Bathrooms:'}</span>
-                    <span className="font-medium">{property.bathrooms}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الواجهة:' : 'Facade:'}</span>
-                    <span className="font-medium">{property.features.facade || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الفئة:' : 'Category:'}</span>
-                    <span className="font-medium">{property.features.category || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'نظام التكييف:' : 'AC System:'}</span>
-                    <span className="font-medium">{property.features.acSystem || 'N/A'}</span>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Land Data */}
-              {property.type === 'land' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
-                    <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عرض الشارع:' : 'Street Width:'}</span>
-                    <span className="font-medium">{property.features.streetWidthNorth || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الواجهة:' : 'Facade:'}</span>
-                    <span className="font-medium">{property.features.facade || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'رقم المخطط:' : 'Plan Number:'}</span>
-                    <span className="font-medium">{property.features.planNumber || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'رقم البلوك:' : 'Block Number:'}</span>
-                    <span className="font-medium">{property.features.blockNumber || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'رقم القطعة:' : 'Parcel Number:'}</span>
-                    <span className="font-medium">{property.features.parcelNumber || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'التقسيم:' : 'Subdivision:'}</span>
-                    <span className="font-medium">{property.features.subdivision || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'تصنيف الأرض:' : 'Land Classification:'}</span>
-                    <span className="font-medium">{property.features.landClassification || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'سعر المتر:' : 'Price per sqm:'}</span>
-                    <span className="font-medium">{property.features.pricePerSqm || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الاستعمال المسموح به:' : 'Allowed Usage:'}</span>
-                    <span className="font-medium">{property.features.allowedUsage || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الحد الأقصى لارتفاع المبنى:' : 'Max Building Height:'}</span>
-                    <span className="font-medium">{property.features.maxBuildingHeight || 'N/A'}</span>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Villa Data */}
-              {property.type === 'villa' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
-                    <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عرض الشارع:' : 'Street Width:'}</span>
-                    <span className="font-medium">{property.features.streetWidthNorth || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الواجهة:' : 'Facade:'}</span>
-                    <span className="font-medium">{property.features.facade || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد الأدوار:' : 'Number of Floors:'}</span>
-                    <span className="font-medium">{property.features.floors || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد الشقق:' : 'Number of Apartments:'}</span>
-                    <span className="font-medium">{property.features.apartments || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عمر العقار:' : 'Property Age:'}</span>
-                    <span className="font-medium">{property.features.age || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'غرف النوم:' : 'Bedrooms:'}</span>
-                    <span className="font-medium">{property.bedrooms}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الصالات:' : 'Living Rooms:'}</span>
-                    <span className="font-medium">{property.features.dailyLivingRoom || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المجالس:' : 'Majlis:'}</span>
-                    <span className="font-medium">{property.features.guestLounge || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'دورات المياه:' : 'Bathrooms:'}</span>
-                    <span className="font-medium">{property.bathrooms}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'نظام التكييف:' : 'AC System:'}</span>
-                    <span className="font-medium">{property.features.acSystem || 'N/A'}</span>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Store/Showroom Data */}
-              {(property.type === 'store' || property.type === 'showroom') ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
-                    <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عرض الشارع:' : 'Street Width:'}</span>
-                    <span className="font-medium">{property.features.streetWidthNorth || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الواجهة:' : 'Facade:'}</span>
-                    <span className="font-medium">{property.features.facade || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عمر العقار:' : 'Property Age:'}</span>
-                    <span className="font-medium">{property.features.age || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'ميزان:' : 'Scale:'}</span>
-                    <span className="font-medium">{property.features.scale || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'مساحة الميزان:' : 'Scale Area:'}</span>
-                    <span className="font-medium">{property.features.scaleArea || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'سعر المتر:' : 'Price per sqm:'}</span>
-                    <span className="font-medium">{property.features.pricePerSqm || 'N/A'}</span>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Building Data */}
-              {property.type === 'building' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
-                    <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عرض الشارع:' : 'Street Width:'}</span>
-                    <span className="font-medium">{property.features.streetWidthNorth || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'الواجهة:' : 'Facade:'}</span>
-                    <span className="font-medium">{property.features.facade || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عمر العقار:' : 'Property Age:'}</span>
-                    <span className="font-medium">{property.features.age || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد الأدوار:' : 'Number of Floors:'}</span>
-                    <span className="font-medium">{property.features.floors || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد الشقق:' : 'Number of Apartments:'}</span>
-                    <span className="font-medium">{property.features.apartments || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد المحلات:' : 'Number of Shops:'}</span>
-                    <span className="font-medium">{property.features.shops || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد العدادات:' : 'Number of Meters:'}</span>
-                    <span className="font-medium">{property.features.meters || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground">{isRTL ? 'عدد المصاعد:' : 'Number of Elevators:'}</span>
-                    <span className="font-medium">{property.features.elevator || 'N/A'}</span>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            {/* Description Section */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                {isRTL ? 'الوصف' : 'Description'}
-              </h2>
-              <div className="text-muted-foreground leading-relaxed">
-                {isRTL ? 
-                  'عقار مميز يتميز بمساحات واسعة وتصميم عصري مع جميع المرافق الحديثة والخدمات المتكاملة. موقع استراتيجي مناسب للعائلات التي تبحث عن الراحة والرفاهية. يتميز العقار بموقعه المتميز في قلب المدينة مع سهولة الوصول إلى جميع الخدمات والمرافق الحيوية.' :
-                  'A distinguished property featuring spacious areas and modern design with all modern facilities and integrated services. Strategic location suitable for families looking for comfort and luxury. The property is distinguished by its prime location in the heart of the city with easy access to all vital services and facilities.'
-                }
-              </div>
-            </div>
-
-            {/* Features Section */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                {t('property.features')}
-              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(property.features).map(([key, value]) => {
-                  if (value === 0) return null;
+                <div className="flex justify-between items-center py-3 border-b border-border/50">
+                  <span className="text-muted-foreground">{isRTL ? 'المساحة:' : 'Area:'}</span>
+                  <span className="font-medium">{property.area} {isRTL ? 'م²' : 'sqm'}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-border/50">
+                  <span className="text-muted-foreground">{isRTL ? 'السعر:' : 'Price:'}</span>
+                  <span className="font-medium">{formatPrice(property.price)} SAR</span>
+                </div>
+                {property.bedrooms > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/50">
+                    <span className="text-muted-foreground">{isRTL ? 'غرف النوم:' : 'Bedrooms:'}</span>
+                    <span className="font-medium">{property.bedrooms}</span>
+                  </div>
+                )}
+                {property.bathrooms > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/50">
+                    <span className="text-muted-foreground">{isRTL ? 'دورات المياه:' : 'Bathrooms:'}</span>
+                    <span className="font-medium">{property.bathrooms}</span>
+                  </div>
+                )}
+                {property.features && Object.entries(property.features).map(([key, value]) => {
+                  if (value === 0 || value === '' || value === null || value === undefined) return null;
                   return (
-                    <div key={key} className="flex justify-between items-center py-2 border-b border-border/50">
+                    <div key={key} className="flex justify-between items-center py-3 border-b border-border/50">
                       <span className="text-muted-foreground">
                         {getFeatureName(key)}
                       </span>
@@ -461,6 +292,41 @@ const PropertyDetail = () => {
                 })}
               </div>
             </div>
+
+            {/* Description Section */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="text-2xl font-bold text-foreground mb-6">
+                {isRTL ? 'الوصف' : 'Description'}
+              </h2>
+              <div className="text-muted-foreground leading-relaxed">
+                {property.description || (isRTL ? 
+                  'عقار مميز يتميز بمساحات واسعة وتصميم عصري مع جميع المرافق الحديثة والخدمات المتكاملة. موقع استراتيجي مناسب للعائلات التي تبحث عن الراحة والرفاهية. يتميز العقار بموقعه المتميز في قلب المدينة مع سهولة الوصول إلى جميع الخدمات والمرافق الحيوية.' :
+                  'A distinguished property featuring spacious areas and modern design with all modern facilities and integrated services. Strategic location suitable for families looking for comfort and luxury. The property is distinguished by its prime location in the heart of the city with easy access to all vital services and facilities.'
+                )}
+              </div>
+            </div>
+
+            {/* Features Section */}
+            {property.features && Object.keys(property.features).length > 0 && (
+              <div className="bg-card border border-border rounded-2xl p-6">
+                <h2 className="text-2xl font-bold text-foreground mb-6">
+                  {t('property.features')}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(property.features).map(([key, value]) => {
+                    if (value === 0 || value === '' || value === null || value === undefined) return null;
+                    return (
+                      <div key={key} className="flex justify-between items-center py-2 border-b border-border/50">
+                        <span className="text-muted-foreground">
+                          {getFeatureName(key)}
+                        </span>
+                        <span className="font-medium">{getFeatureValue(key, value)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -482,19 +348,21 @@ const PropertyDetail = () => {
             </div>
 
             {/* Services */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">
-                {t('property.services')}
-              </h3>
-              <div className="space-y-2">
-                {property.services.map((service, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-muted-foreground">{service}</span>
-                  </div>
-                ))}
+            {property.services && property.services.length > 0 && (
+              <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-foreground mb-4">
+                  {t('property.services')}
+                </h3>
+                <div className="space-y-2">
+                  {property.services.map((service: string, index: number) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <span className="text-muted-foreground">{service}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Usage */}
             <div className="bg-card border border-border rounded-2xl p-6">

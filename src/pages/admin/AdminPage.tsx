@@ -29,8 +29,7 @@ const AdminPage: React.FC = () => {
     bathrooms: '',
     type: '',
     purpose: '',
-    images: '',
-    video: '',
+    description: '',
     services: '',
     advertiserNumber: '',
     advertiserLicense: '',
@@ -165,29 +164,29 @@ const AdminPage: React.FC = () => {
     
     switch (propertyType) {
       case 'villa':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'facade', 'streetWidth', 'guestLounge', 'dailyLivingRoom', 'diningRoom', 'kitchen'];
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'facade', 'streetWidth'];
       case 'apartment_tower':
       case 'apartment_building':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'age', 'dailyLivingRoom', 'facade', 'category', 'acSystem'];
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'age'];
       case 'land':
-        return [...baseRequired, 'planNumber', 'blockNumber', 'parcelNumber', 'subdivision', 'landClassification', 'pricePerSqm', 'allowedUsage', 'maxBuildingHeight'];
+        return [...baseRequired, 'planNumber', 'blockNumber', 'parcelNumber', 'allowedUsage', 'maxBuildingHeight'];
       case 'building':
-        return [...baseRequired, 'floors', 'apartments', 'shops', 'meters', 'elevator', 'age'];
+        return [...baseRequired, 'floors', 'apartments', 'shops', 'meters'];
       case 'store':
       case 'showroom':
-        return [...baseRequired, 'scale', 'scaleArea', 'pricePerSqm', 'age'];
+        return [...baseRequired, 'scale', 'scaleArea', 'age'];
       case 'townhouse':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'garden'];
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors'];
       case 'mansion':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'garden', 'pool'];
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors'];
       case 'farm':
-        return [...baseRequired, 'landArea', 'garden'];
+        return [...baseRequired, 'landArea'];
       case 'istraha':
-        return [...baseRequired, 'landArea', 'garden', 'pool'];
+        return [...baseRequired, 'landArea'];
       case 'resort':
-        return [...baseRequired, 'landArea', 'pool', 'gym', 'security'];
+        return [...baseRequired, 'landArea'];
       case 'office':
-        return [...baseRequired, 'commercialArea', 'parkingSpaces'];
+        return [...baseRequired, 'commercialArea'];
       default:
         return baseRequired;
     }
@@ -228,15 +227,8 @@ const AdminPage: React.FC = () => {
         .filter(item => item.type === 'video')
         .map(item => `/uploads/${item.file.name}`);
 
-      const allImages = [
-        ...uploadedImageUrls,
-        ...(formData.images ? formData.images.split(',').map(img => img.trim()).filter(Boolean) : [])
-      ];
-
-      const allVideos = [
-        ...uploadedVideoUrls,
-        ...(formData.video ? [formData.video] : [])
-      ];
+      const allImages = uploadedImageUrls.length > 0 ? uploadedImageUrls : ['/src/assets/hero-real-estate.jpg'];
+      const allVideos = uploadedVideoUrls.length > 0 ? uploadedVideoUrls : [];
 
       const buildFeatures = () => {
         const baseFeatures = {
@@ -288,8 +280,9 @@ const AdminPage: React.FC = () => {
         type: formData.type || 'villa',
         purpose: formData.purpose || 'sale',
         usage: formData.type === 'land' || formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom' ? 'Commercial' : 'Residential',
-        images: allImages.length > 0 ? allImages : ['/src/assets/hero-real-estate.jpg'],
+        images: allImages,
         video: allVideos.length > 0 ? allVideos[0] : undefined,
+        description: formData.description.trim() || undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
           number: formData.advertiserNumber.trim() || '7200640143',
@@ -344,8 +337,7 @@ const AdminPage: React.FC = () => {
       bathrooms: property.bathrooms.toString(),
       type: property.type,
       purpose: property.purpose,
-      images: property.images.join(', '),
-      video: property.video || '',
+      description: property.description || '',
       services: property.services.join(', '),
       advertiserNumber: property.advertiser.number,
       advertiserLicense: property.advertiser.license,
@@ -404,8 +396,7 @@ const AdminPage: React.FC = () => {
       bathrooms: '',
       type: '',
       purpose: '',
-      images: '',
-      video: '',
+      description: '',
       services: '',
       advertiserNumber: '',
       advertiserLicense: '',
@@ -615,6 +606,21 @@ const AdminPage: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Description</h3>
+                  <div>
+                    <Label htmlFor="description">Property Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleInputChange('description', e.target.value)}
+                      placeholder="Describe the property features, location advantages, and unique selling points..."
+                      rows={4}
+                    />
                   </div>
                 </div>
 
@@ -922,16 +928,6 @@ const AdminPage: React.FC = () => {
                           placeholder="200"
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="pricePerSqm">Price per sqm (SAR)</Label>
-                        <Input
-                          id="pricePerSqm"
-                          type="number"
-                          value={formData.pricePerSqm}
-                          onChange={(e) => handleInputChange('pricePerSqm', e.target.value)}
-                          placeholder="3000"
-                        />
-                      </div>
                     </div>
                   </div>
                 )}
@@ -1044,27 +1040,6 @@ const AdminPage: React.FC = () => {
                       </div>
                     </div>
                   )}
-
-                  <div className="space-y-3">
-                    <Label htmlFor="images">Or add image URLs manually</Label>
-                    <Textarea
-                      id="images"
-                      value={formData.images}
-                      onChange={(e) => handleInputChange('images', e.target.value)}
-                      placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-                      rows={2}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="video">Video URL (optional)</Label>
-                    <Input
-                      id="video"
-                      value={formData.video}
-                      onChange={(e) => handleInputChange('video', e.target.value)}
-                      placeholder="https://example.com/video.mp4"
-                    />
-                  </div>
                 </div>
 
                 {/* Services */}
