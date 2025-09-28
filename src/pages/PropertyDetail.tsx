@@ -23,23 +23,33 @@ const PropertyDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    loadProperty();
+    if (id) {
+      loadProperty();
+    }
   }, [id]);
 
   const loadProperty = async () => {
     try {
       setLoading(true);
+      setError(null);
+      console.log('Loading property with ID:', id);
+      
       const response = await apiService.getProperty(id!);
-      if (response.success) {
+      console.log('API Response:', response);
+      
+      if (response.success && response.data) {
         setProperty(response.data);
       } else {
+        setError(response.error || 'Property not found');
         setProperty(null);
       }
     } catch (error) {
       console.error('Error loading property:', error);
+      setError('Failed to load property');
       setProperty(null);
     } finally {
       setLoading(false);
@@ -57,13 +67,16 @@ const PropertyDetail = () => {
     );
   }
 
-  if (!property) {
+  if (error || !property) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">
-            {t('property.notFound')}
+            {error || t('property.notFound')}
           </h1>
+          <p className="text-muted-foreground mb-6">
+            Property ID: {id}
+          </p>
           <Link to="/cities" className="btn-primary">
             {t('property.backToProperties')}
           </Link>
