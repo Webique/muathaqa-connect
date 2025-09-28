@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: muathaqa-connect-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://webiqueuser:webiquepassword@cluster0.d6rpmuc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - key: FRONTEND_URL
+        value: https://your-frontend-url.onrender.com
+      - key: JWT_SECRET
+        value: your-super-secret-jwt-key-here

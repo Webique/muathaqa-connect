@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import { properties, cities, purposes, propertyTypes, buildingTypes } from '@/data/propertyData';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiService, Property, PropertyFilters } from '@/services/api';
+import { cities, purposes, propertyTypes, buildingTypes } from '@/data/propertyData';
 
 interface SearchFilters {
   city: string;
@@ -20,10 +21,14 @@ interface SearchContextType {
   setFilters: (filters: SearchFilters) => void;
   updateFilter: (key: keyof SearchFilters, value: string | number | undefined) => void;
   clearFilters: () => void;
-  searchResults: typeof properties;
+  searchResults: Property[];
   isSearching: boolean;
-  performSearch: () => void;
+  performSearch: () => Promise<void>;
   totalResults: number;
+  currentPage: number;
+  totalPages: number;
+  loadMore: () => Promise<void>;
+  error: string | null;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -37,6 +42,11 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     buildingType: ''
   });
   const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<Property[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   const updateFilter = (key: keyof SearchFilters, value: string | number | undefined) => {
     setFilters(prev => ({
@@ -55,72 +65,75 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   };
 
-  const searchResults = useMemo(() => {
-    return properties.filter(property => {
-      // City filter
-      if (filters.city && property.location.en.toLowerCase() !== filters.city.toLowerCase()) {
-        return false;
-      }
-
-      // District filter (this would need to be expanded with actual district data)
-      if (filters.district && property.location.en.toLowerCase() !== filters.district.toLowerCase()) {
-        return false;
-      }
-
-      // Purpose filter
-      if (filters.purpose && property.purpose !== filters.purpose) {
-        return false;
-      }
-
-      // Property type filter (residential/commercial)
-      if (filters.type && property.usage.toLowerCase() !== filters.type.toLowerCase()) {
-        return false;
-      }
-
-      // Building type filter
-      if (filters.buildingType && filters.buildingType !== 'all' && property.type !== filters.buildingType) {
-        return false;
-      }
-
-      // Price range filter
-      if (filters.minPrice && property.price < filters.minPrice) {
-        return false;
-      }
-      if (filters.maxPrice && property.price > filters.maxPrice) {
-        return false;
-      }
-
-      // Area range filter
-      if (filters.minArea && property.area < filters.minArea) {
-        return false;
-      }
-      if (filters.maxArea && property.area > filters.maxArea) {
-        return false;
-      }
-
-      // Bedrooms filter
-      if (filters.bedrooms && property.bedrooms < filters.bedrooms) {
-        return false;
-      }
-
-      // Bathrooms filter
-      if (filters.bathrooms && property.bathrooms < filters.bathrooms) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [filters]);
-
-  const performSearch = () => {
+  const performSearch = async (page = 1, append = false) => {
     setIsSearching(true);
-    // Simulate search delay
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      // Convert filters to API format
+      const apiFilters: PropertyFilters = {
+        page,
+        limit: 10,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      };
+
+      // Map frontend filters to API filters
+      if (filters.purpose) apiFilters.purpose = filters.purpose;
+      if (filters.buildingType && filters.buildingType !== 'all') apiFilters.type = filters.buildingType;
+      if (filters.type) apiFilters.type = filters.type;
+      if (filters.minPrice) apiFilters.minPrice = filters.minPrice;
+      if (filters.maxPrice) apiFilters.maxPrice = filters.maxPrice;
+      if (filters.minArea) apiFilters.minArea = filters.minArea;
+      if (filters.maxArea) apiFilters.maxArea = filters.maxArea;
+      if (filters.bedrooms) apiFilters.bedrooms = filters.bedrooms;
+      if (filters.bathrooms) apiFilters.bathrooms = filters.bathrooms;
+      if (filters.city) apiFilters.city = filters.city;
+
+      const response = await apiService.getProperties(apiFilters);
+
+      if (response.success) {
+        if (append) {
+          setSearchResults(prev => [...prev, ...response.data]);
+        } else {
+          setSearchResults(response.data);
+        }
+        
+        if (response.pagination) {
+          setTotalResults(response.pagination.totalItems);
+          setTotalPages(response.pagination.totalPages);
+          setCurrentPage(response.pagination.currentPage);
+        }
+      } else {
+        setError('Failed to fetch properties');
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      setError('An error occurred while searching');
+    } finally {
       setIsSearching(false);
-    }, 500);
+    }
   };
 
-  const totalResults = searchResults.length;
+  const loadMore = async () => {
+    if (currentPage < totalPages && !isSearching) {
+      await performSearch(currentPage + 1, true);
+    }
+  };
+
+  // Load initial data
+  useEffect(() => {
+    performSearch();
+  }, []);
+
+  // Perform search when filters change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      performSearch();
+    }, 500); // Debounce search
+
+    return () => clearTimeout(timeoutId);
+  }, [filters]);
 
   const value = {
     filters,
@@ -129,8 +142,12 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     clearFilters,
     searchResults,
     isSearching,
-    performSearch,
-    totalResults
+    performSearch: () => performSearch(),
+    totalResults,
+    currentPage,
+    totalPages,
+    loadMore,
+    error
   };
 
   return (

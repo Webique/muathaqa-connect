@@ -1,0 +1,12 @@
+{
+  "name": "muathaqa-connect-netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for Muathaqa Connect API",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "^8.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
