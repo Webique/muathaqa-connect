@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Edit, X, Upload, Image, Video } from 'lucide-react';
+import { Trash2, Plus, Edit, X, Upload, Image, Video, File } from 'lucide-react';
 import { apiService, Property } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -15,7 +15,7 @@ const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{file: File, url: string, type: 'image' | 'video'}[]>([]);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     titleEn: '',
@@ -61,24 +61,33 @@ const AdminPage: React.FC = () => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    const uploadedUrls: string[] = [];
+    const newFiles: {file: File, url: string, type: 'image' | 'video'}[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Create a simple file URL (in production, you'd upload to a service like Cloudinary)
-        const fileUrl = URL.createObjectURL(file);
-        uploadedUrls.push(fileUrl);
+        // Check file type
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
         
-        // For demo purposes, we'll use placeholder URLs
-        // In production, you'd upload to a real service
-        const placeholderUrl = `https://via.placeholder.com/800x600/4F46E5/FFFFFF?text=${encodeURIComponent(file.name)}`;
-        uploadedUrls.push(placeholderUrl);
+        if (!isImage && !isVideo) {
+          toast.error(`${file.name} is not a supported image or video file`);
+          continue;
+        }
+
+        // Create object URL for preview
+        const fileUrl = URL.createObjectURL(file);
+        
+        newFiles.push({
+          file: file,
+          url: fileUrl,
+          type: isImage ? 'image' : 'video'
+        });
       }
 
-      setUploadedFiles(prev => [...prev, ...uploadedUrls]);
-      toast.success(`${files.length} file(s) uploaded successfully!`);
+      setUploadedFiles(prev => [...prev, ...newFiles]);
+      toast.success(`${newFiles.length} file(s) uploaded successfully!`);
     } catch (error) {
       toast.error('Failed to upload files');
     } finally {
@@ -87,16 +96,36 @@ const AdminPage: React.FC = () => {
   };
 
   const removeUploadedFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles(prev => {
+      const newFiles = prev.filter((_, i) => i !== index);
+      // Revoke object URL to free memory
+      URL.revokeObjectURL(prev[index].url);
+      return newFiles;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // For demo purposes, we'll use the file names as URLs
+      // In production, you'd upload to a real service
+      const uploadedImageUrls = uploadedFiles
+        .filter(item => item.type === 'image')
+        .map(item => `/uploads/${item.file.name}`);
+      
+      const uploadedVideoUrls = uploadedFiles
+        .filter(item => item.type === 'video')
+        .map(item => `/uploads/${item.file.name}`);
+
       // Combine uploaded files with manually entered URLs
       const allImages = [
-        ...uploadedFiles,
+        ...uploadedImageUrls,
         ...(formData.images ? formData.images.split(',').map(img => img.trim()).filter(Boolean) : [])
+      ];
+
+      const allVideos = [
+        ...uploadedVideoUrls,
+        ...(formData.video ? [formData.video] : [])
       ];
 
       const propertyData = {
@@ -116,7 +145,7 @@ const AdminPage: React.FC = () => {
         purpose: formData.purpose || 'sale',
         usage: 'Residential',
         images: allImages.length > 0 ? allImages : ['/src/assets/hero-real-estate.jpg'],
-        video: formData.video || undefined,
+        video: allVideos.length > 0 ? allVideos[0] : undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
           number: formData.advertiserNumber || '7200640143',
@@ -207,6 +236,8 @@ const AdminPage: React.FC = () => {
       advertiserNumber: '',
       advertiserLicense: ''
     });
+    // Clean up object URLs
+    uploadedFiles.forEach(file => URL.revokeObjectURL(file.url));
     setUploadedFiles([]);
   };
 
@@ -430,14 +461,30 @@ const AdminPage: React.FC = () => {
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Uploaded Files ({uploadedFiles.length})</Label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {uploadedFiles.map((file, index) => (
+                        {uploadedFiles.map((fileItem, index) => (
                           <div key={index} className="relative group">
                             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                              <img
-                                src={file}
-                                alt={`Uploaded file ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
+                              {fileItem.type === 'image' ? (
+                                <img
+                                  src={fileItem.url}
+                                  alt={`Uploaded image ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                  <Video className="w-8 h-8 text-gray-500" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="absolute top-1 left-1">
+                              <Badge variant="secondary" className="text-xs">
+                                {fileItem.type === 'image' ? (
+                                  <Image className="w-3 h-3 mr-1" />
+                                ) : (
+                                  <Video className="w-3 h-3 mr-1" />
+                                )}
+                                {fileItem.type}
+                              </Badge>
                             </div>
                             <Button
                               size="sm"
@@ -447,6 +494,11 @@ const AdminPage: React.FC = () => {
                             >
                               <X className="w-3 h-3" />
                             </Button>
+                            <div className="absolute bottom-1 left-1 right-1">
+                              <p className="text-xs text-white bg-black bg-opacity-50 px-1 py-0.5 rounded truncate">
+                                {fileItem.file.name}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>
