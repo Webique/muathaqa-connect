@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Handle client-side routing - this must be last
+# Handle client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
