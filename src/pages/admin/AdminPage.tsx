@@ -45,9 +45,12 @@ const AdminPage: React.FC = () => {
       const response = await apiService.getProperties();
       if (response.success) {
         setProperties(response.data);
+      } else {
+        toast.error('Failed to load properties: ' + (response.error || 'Unknown error'));
       }
     } catch (error) {
-      toast.error('Failed to load properties');
+      console.error('Error loading properties:', error);
+      toast.error('Failed to load properties. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -73,6 +76,12 @@ const AdminPage: React.FC = () => {
         
         if (!isImage && !isVideo) {
           toast.error(`${file.name} is not a supported image or video file`);
+          continue;
+        }
+
+        // Check file size (limit to 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} is too large. Maximum size is 10MB.`);
           continue;
         }
 
@@ -179,7 +188,8 @@ const AdminPage: React.FC = () => {
       resetForm();
       loadProperties();
     } catch (error) {
-      toast.error('Failed to save property');
+      console.error('Error saving property:', error);
+      toast.error('Failed to save property. Please try again.');
     }
   };
 
@@ -190,7 +200,8 @@ const AdminPage: React.FC = () => {
         toast.success('Property deleted!');
         loadProperties();
       } catch (error) {
-        toast.error('Failed to delete property');
+        console.error('Error deleting property:', error);
+        toast.error('Failed to delete property. Please try again.');
       }
     }
   };
@@ -450,7 +461,7 @@ const AdminPage: React.FC = () => {
                           Supports: JPG, PNG, GIF, MP4, MOV, AVI
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
-                          You can select multiple files at once
+                          Maximum file size: 10MB per file
                         </p>
                       </div>
                     </label>
