@@ -32,7 +32,26 @@ const AdminPage: React.FC = () => {
     video: '',
     services: '',
     advertiserNumber: '',
-    advertiserLicense: ''
+    advertiserLicense: '',
+    // Additional fields for different property types
+    floors: '',
+    facade: '',
+    streetWidth: '',
+    age: '',
+    allowedUsage: '',
+    maxBuildingHeight: '',
+    buildingArea: '',
+    landArea: '',
+    commercialArea: '',
+    residentialArea: '',
+    parkingSpaces: '',
+    elevator: '',
+    balcony: '',
+    garden: '',
+    pool: '',
+    gym: '',
+    security: '',
+    maintenance: ''
   });
 
   useEffect(() => {
@@ -113,8 +132,65 @@ const AdminPage: React.FC = () => {
     });
   };
 
+  // Get required fields based on property type
+  const getRequiredFields = (propertyType: string) => {
+    const baseRequired = ['titleEn', 'price', 'area', 'type', 'purpose'];
+    
+    switch (propertyType) {
+      case 'villa':
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'facade', 'streetWidth'];
+      case 'apartment_tower':
+      case 'apartment_building':
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'age'];
+      case 'land':
+        return [...baseRequired, 'allowedUsage', 'maxBuildingHeight'];
+      case 'building':
+        return [...baseRequired, 'buildingArea', 'commercialArea', 'residentialArea'];
+      case 'store':
+      case 'office':
+      case 'showroom':
+        return [...baseRequired, 'commercialArea', 'parkingSpaces'];
+      case 'townhouse':
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'garden'];
+      case 'mansion':
+        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'garden', 'pool'];
+      case 'farm':
+        return [...baseRequired, 'landArea', 'garden'];
+      case 'istraha':
+        return [...baseRequired, 'landArea', 'garden', 'pool'];
+      case 'resort':
+        return [...baseRequired, 'landArea', 'pool', 'gym', 'security'];
+      default:
+        return baseRequired;
+    }
+  };
+
+  const validateForm = () => {
+    const requiredFields = getRequiredFields(formData.type);
+    const errors: string[] = [];
+
+    requiredFields.forEach(field => {
+      const value = formData[field as keyof typeof formData];
+      if (!value || value.toString().trim() === '') {
+        const fieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        errors.push(`${fieldName} is required for ${formData.type}`);
+      }
+    });
+
+    if (errors.length > 0) {
+      toast.error(errors.join(', '));
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       // For demo purposes, we'll use the file names as URLs
       // In production, you'd upload to a real service
@@ -137,6 +213,43 @@ const AdminPage: React.FC = () => {
         ...(formData.video ? [formData.video] : [])
       ];
 
+      // Build features object based on property type
+      const buildFeatures = () => {
+        const baseFeatures = {
+          floors: parseInt(formData.floors) || 0,
+          guestLounge: 0,
+          facade: formData.facade || 'North',
+          streetWidthNorth: parseInt(formData.streetWidth) || 0,
+          dailyLivingRoom: 1,
+          diningRoom: 1,
+          maidRoom: 0,
+          driverRoom: 0,
+          kitchen: 1,
+          storageRoom: 0,
+          elevator: parseInt(formData.elevator) || 0
+        };
+
+        // Add type-specific features
+        if (formData.type === 'land') {
+          return {
+            ...baseFeatures,
+            allowedUsage: formData.allowedUsage,
+            maxBuildingHeight: parseInt(formData.maxBuildingHeight) || 0
+          };
+        }
+
+        if (formData.type === 'building') {
+          return {
+            ...baseFeatures,
+            buildingArea: parseInt(formData.buildingArea) || 0,
+            commercialArea: parseInt(formData.commercialArea) || 0,
+            residentialArea: parseInt(formData.residentialArea) || 0
+          };
+        }
+
+        return baseFeatures;
+      };
+
       // Clean up empty strings and provide defaults
       const propertyData = {
         title: {
@@ -153,7 +266,7 @@ const AdminPage: React.FC = () => {
         bathrooms: parseInt(formData.bathrooms) || 0,
         type: formData.type || 'villa',
         purpose: formData.purpose || 'sale',
-        usage: 'Residential',
+        usage: formData.type === 'land' || formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom' ? 'Commercial' : 'Residential',
         images: allImages.length > 0 ? allImages : ['/src/assets/hero-real-estate.jpg'],
         video: allVideos.length > 0 ? allVideos[0] : undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
@@ -161,19 +274,7 @@ const AdminPage: React.FC = () => {
           number: formData.advertiserNumber.trim() || '7200640143',
           license: formData.advertiserLicense.trim() || '1200027687'
         },
-        features: {
-          floors: 1,
-          guestLounge: 0,
-          facade: 'North',
-          streetWidthNorth: 10,
-          dailyLivingRoom: 1,
-          diningRoom: 1,
-          maidRoom: 0,
-          driverRoom: 0,
-          kitchen: 1,
-          storageRoom: 0,
-          elevator: 0
-        }
+        features: buildFeatures()
       };
 
       // Debug: Log the data being sent
@@ -227,7 +328,25 @@ const AdminPage: React.FC = () => {
       video: property.video || '',
       services: property.services.join(', '),
       advertiserNumber: property.advertiser.number,
-      advertiserLicense: property.advertiser.license
+      advertiserLicense: property.advertiser.license,
+      floors: property.features.floors?.toString() || '',
+      facade: property.features.facade || '',
+      streetWidth: property.features.streetWidthNorth?.toString() || '',
+      age: '',
+      allowedUsage: '',
+      maxBuildingHeight: '',
+      buildingArea: '',
+      landArea: '',
+      commercialArea: '',
+      residentialArea: '',
+      parkingSpaces: '',
+      elevator: property.features.elevator?.toString() || '',
+      balcony: '',
+      garden: '',
+      pool: '',
+      gym: '',
+      security: '',
+      maintenance: ''
     });
     setUploadedFiles([]);
     setShowForm(true);
@@ -249,7 +368,25 @@ const AdminPage: React.FC = () => {
       video: '',
       services: '',
       advertiserNumber: '',
-      advertiserLicense: ''
+      advertiserLicense: '',
+      floors: '',
+      facade: '',
+      streetWidth: '',
+      age: '',
+      allowedUsage: '',
+      maxBuildingHeight: '',
+      buildingArea: '',
+      landArea: '',
+      commercialArea: '',
+      residentialArea: '',
+      parkingSpaces: '',
+      elevator: '',
+      balcony: '',
+      garden: '',
+      pool: '',
+      gym: '',
+      security: '',
+      maintenance: ''
     });
     // Clean up object URLs
     uploadedFiles.forEach(file => URL.revokeObjectURL(file.url));
@@ -281,7 +418,7 @@ const AdminPage: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Property Management</h1>
-          <p className="mt-2 text-gray-600">Simple property management with file uploads</p>
+          <p className="mt-2 text-gray-600">Complete property management with conditional requirements</p>
         </div>
 
         {/* Add Property Button */}
@@ -299,7 +436,7 @@ const AdminPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* Simple Form */}
+        {/* Comprehensive Form */}
         {showForm && (
           <Card className="mb-8">
             <CardHeader>
@@ -319,124 +456,560 @@ const AdminPage: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Required Fields */}
-                  <div>
-                    <Label htmlFor="titleEn">Property Name (English) *</Label>
-                    <Input
-                      id="titleEn"
-                      value={formData.titleEn}
-                      onChange={(e) => handleInputChange('titleEn', e.target.value)}
-                      placeholder="e.g., Villa in Al Malqa"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="titleAr">Property Name (Arabic)</Label>
-                    <Input
-                      id="titleAr"
-                      value={formData.titleAr}
-                      onChange={(e) => handleInputChange('titleAr', e.target.value)}
-                      placeholder="مثال: فيلا في الملقا"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="price">Price (SAR) *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) => handleInputChange('price', e.target.value)}
-                      placeholder="8000000"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="locationEn">Location (English)</Label>
-                    <Input
-                      id="locationEn"
-                      value={formData.locationEn}
-                      onChange={(e) => handleInputChange('locationEn', e.target.value)}
-                      placeholder="e.g., Riyadh, Saudi Arabia"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="locationAr">Location (Arabic)</Label>
-                    <Input
-                      id="locationAr"
-                      value={formData.locationAr}
-                      onChange={(e) => handleInputChange('locationAr', e.target.value)}
-                      placeholder="مثال: الرياض، المملكة العربية السعودية"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="area">Area (m²)</Label>
-                    <Input
-                      id="area"
-                      type="number"
-                      value={formData.area}
-                      onChange={(e) => handleInputChange('area', e.target.value)}
-                      placeholder="600"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bedrooms">Bedrooms</Label>
-                    <Input
-                      id="bedrooms"
-                      type="number"
-                      value={formData.bedrooms}
-                      onChange={(e) => handleInputChange('bedrooms', e.target.value)}
-                      placeholder="6"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bathrooms">Bathrooms</Label>
-                    <Input
-                      id="bathrooms"
-                      type="number"
-                      value={formData.bathrooms}
-                      onChange={(e) => handleInputChange('bathrooms', e.target.value)}
-                      placeholder="3"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="type">Property Type</Label>
-                    <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="villa">Villa</SelectItem>
-                        <SelectItem value="apartment_tower">Apartment in Tower</SelectItem>
-                        <SelectItem value="apartment_building">Apartment in Building</SelectItem>
-                        <SelectItem value="land">Land</SelectItem>
-                        <SelectItem value="building">Building</SelectItem>
-                        <SelectItem value="townhouse">Townhouse</SelectItem>
-                        <SelectItem value="mansion">Mansion</SelectItem>
-                        <SelectItem value="farm">Farm</SelectItem>
-                        <SelectItem value="istraha">Istraha</SelectItem>
-                        <SelectItem value="store">Store</SelectItem>
-                        <SelectItem value="office">Office</SelectItem>
-                        <SelectItem value="resort">Resort</SelectItem>
-                        <SelectItem value="showroom">Showroom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="purpose">Purpose</Label>
-                    <Select value={formData.purpose} onValueChange={(value) => handleInputChange('purpose', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select purpose" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sale">For Sale</SelectItem>
-                        <SelectItem value="rent">For Rent</SelectItem>
-                        <SelectItem value="investment">For Investment</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Basic Information */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Basic Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="titleEn">Property Name (English) *</Label>
+                      <Input
+                        id="titleEn"
+                        value={formData.titleEn}
+                        onChange={(e) => handleInputChange('titleEn', e.target.value)}
+                        placeholder="e.g., Villa in Al Malqa"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="titleAr">Property Name (Arabic)</Label>
+                      <Input
+                        id="titleAr"
+                        value={formData.titleAr}
+                        onChange={(e) => handleInputChange('titleAr', e.target.value)}
+                        placeholder="مثال: فيلا في الملقا"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="price">Price (SAR) *</Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={(e) => handleInputChange('price', e.target.value)}
+                        placeholder="8000000"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="area">Area (m²) *</Label>
+                      <Input
+                        id="area"
+                        type="number"
+                        value={formData.area}
+                        onChange={(e) => handleInputChange('area', e.target.value)}
+                        placeholder="600"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="locationEn">Location (English)</Label>
+                      <Input
+                        id="locationEn"
+                        value={formData.locationEn}
+                        onChange={(e) => handleInputChange('locationEn', e.target.value)}
+                        placeholder="e.g., Riyadh, Saudi Arabia"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="locationAr">Location (Arabic)</Label>
+                      <Input
+                        id="locationAr"
+                        value={formData.locationAr}
+                        onChange={(e) => handleInputChange('locationAr', e.target.value)}
+                        placeholder="مثال: الرياض، المملكة العربية السعودية"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="type">Property Type *</Label>
+                      <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="villa">Villa</SelectItem>
+                          <SelectItem value="apartment_tower">Apartment in Tower</SelectItem>
+                          <SelectItem value="apartment_building">Apartment in Building</SelectItem>
+                          <SelectItem value="land">Land</SelectItem>
+                          <SelectItem value="building">Building</SelectItem>
+                          <SelectItem value="townhouse">Townhouse</SelectItem>
+                          <SelectItem value="mansion">Mansion</SelectItem>
+                          <SelectItem value="farm">Farm</SelectItem>
+                          <SelectItem value="istraha">Istraha</SelectItem>
+                          <SelectItem value="store">Store</SelectItem>
+                          <SelectItem value="office">Office</SelectItem>
+                          <SelectItem value="resort">Resort</SelectItem>
+                          <SelectItem value="showroom">Showroom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="purpose">Purpose *</Label>
+                      <Select value={formData.purpose} onValueChange={(value) => handleInputChange('purpose', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select purpose" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sale">For Sale</SelectItem>
+                          <SelectItem value="rent">For Rent</SelectItem>
+                          <SelectItem value="investment">For Investment</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
+
+                {/* Property Type Specific Fields */}
+                {formData.type && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {formData.type.charAt(0).toUpperCase() + formData.type.slice(1).replace('_', ' ')} Requirements
+                    </h3>
+                    
+                    {/* Villa Requirements */}
+                    {formData.type === 'villa' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="bedrooms">Bedrooms *</Label>
+                          <Input
+                            id="bedrooms"
+                            type="number"
+                            value={formData.bedrooms}
+                            onChange={(e) => handleInputChange('bedrooms', e.target.value)}
+                            placeholder="6"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="bathrooms">Bathrooms *</Label>
+                          <Input
+                            id="bathrooms"
+                            type="number"
+                            value={formData.bathrooms}
+                            onChange={(e) => handleInputChange('bathrooms', e.target.value)}
+                            placeholder="3"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="floors">Number of Floors *</Label>
+                          <Input
+                            id="floors"
+                            type="number"
+                            value={formData.floors}
+                            onChange={(e) => handleInputChange('floors', e.target.value)}
+                            placeholder="3"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="facade">Facade Direction *</Label>
+                          <Select value={formData.facade} onValueChange={(value) => handleInputChange('facade', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select facade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="North">North</SelectItem>
+                              <SelectItem value="South">South</SelectItem>
+                              <SelectItem value="East">East</SelectItem>
+                              <SelectItem value="West">West</SelectItem>
+                              <SelectItem value="North-East">North-East</SelectItem>
+                              <SelectItem value="North-West">North-West</SelectItem>
+                              <SelectItem value="South-East">South-East</SelectItem>
+                              <SelectItem value="South-West">South-West</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="streetWidth">Street Width (m) *</Label>
+                          <Input
+                            id="streetWidth"
+                            type="number"
+                            value={formData.streetWidth}
+                            onChange={(e) => handleInputChange('streetWidth', e.target.value)}
+                            placeholder="15"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Apartment Requirements */}
+                    {(formData.type === 'apartment_tower' || formData.type === 'apartment_building') && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="bedrooms">Bedrooms *</Label>
+                          <Input
+                            id="bedrooms"
+                            type="number"
+                            value={formData.bedrooms}
+                            onChange={(e) => handleInputChange('bedrooms', e.target.value)}
+                            placeholder="2"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="bathrooms">Bathrooms *</Label>
+                          <Input
+                            id="bathrooms"
+                            type="number"
+                            value={formData.bathrooms}
+                            onChange={(e) => handleInputChange('bathrooms', e.target.value)}
+                            placeholder="2"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="floors">Floor Number *</Label>
+                          <Input
+                            id="floors"
+                            type="number"
+                            value={formData.floors}
+                            onChange={(e) => handleInputChange('floors', e.target.value)}
+                            placeholder="5"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="age">Property Age (years) *</Label>
+                          <Input
+                            id="age"
+                            type="number"
+                            value={formData.age}
+                            onChange={(e) => handleInputChange('age', e.target.value)}
+                            placeholder="5"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Land Requirements */}
+                    {formData.type === 'land' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="allowedUsage">Allowed Usage *</Label>
+                          <Select value={formData.allowedUsage} onValueChange={(value) => handleInputChange('allowedUsage', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select usage" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Residential">Residential</SelectItem>
+                              <SelectItem value="Commercial">Commercial</SelectItem>
+                              <SelectItem value="Mixed">Mixed</SelectItem>
+                              <SelectItem value="Industrial">Industrial</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="maxBuildingHeight">Max Building Height (floors) *</Label>
+                          <Input
+                            id="maxBuildingHeight"
+                            type="number"
+                            value={formData.maxBuildingHeight}
+                            onChange={(e) => handleInputChange('maxBuildingHeight', e.target.value)}
+                            placeholder="10"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Building Requirements */}
+                    {formData.type === 'building' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="buildingArea">Building Area (m²) *</Label>
+                          <Input
+                            id="buildingArea"
+                            type="number"
+                            value={formData.buildingArea}
+                            onChange={(e) => handleInputChange('buildingArea', e.target.value)}
+                            placeholder="2000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="commercialArea">Commercial Area (m²) *</Label>
+                          <Input
+                            id="commercialArea"
+                            type="number"
+                            value={formData.commercialArea}
+                            onChange={(e) => handleInputChange('commercialArea', e.target.value)}
+                            placeholder="1000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="residentialArea">Residential Area (m²) *</Label>
+                          <Input
+                            id="residentialArea"
+                            type="number"
+                            value={formData.residentialArea}
+                            onChange={(e) => handleInputChange('residentialArea', e.target.value)}
+                            placeholder="1000"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Commercial Properties (Store, Office, Showroom) */}
+                    {(formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom') && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="commercialArea">Commercial Area (m²) *</Label>
+                          <Input
+                            id="commercialArea"
+                            type="number"
+                            value={formData.commercialArea}
+                            onChange={(e) => handleInputChange('commercialArea', e.target.value)}
+                            placeholder="100"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="parkingSpaces">Parking Spaces *</Label>
+                          <Input
+                            id="parkingSpaces"
+                            type="number"
+                            value={formData.parkingSpaces}
+                            onChange={(e) => handleInputChange('parkingSpaces', e.target.value)}
+                            placeholder="5"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Townhouse Requirements */}
+                    {formData.type === 'townhouse' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="bedrooms">Bedrooms *</Label>
+                          <Input
+                            id="bedrooms"
+                            type="number"
+                            value={formData.bedrooms}
+                            onChange={(e) => handleInputChange('bedrooms', e.target.value)}
+                            placeholder="3"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="bathrooms">Bathrooms *</Label>
+                          <Input
+                            id="bathrooms"
+                            type="number"
+                            value={formData.bathrooms}
+                            onChange={(e) => handleInputChange('bathrooms', e.target.value)}
+                            placeholder="2"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="floors">Number of Floors *</Label>
+                          <Input
+                            id="floors"
+                            type="number"
+                            value={formData.floors}
+                            onChange={(e) => handleInputChange('floors', e.target.value)}
+                            placeholder="2"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="garden">Garden Area (m²) *</Label>
+                          <Input
+                            id="garden"
+                            type="number"
+                            value={formData.garden}
+                            onChange={(e) => handleInputChange('garden', e.target.value)}
+                            placeholder="50"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Mansion Requirements */}
+                    {formData.type === 'mansion' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="bedrooms">Bedrooms *</Label>
+                          <Input
+                            id="bedrooms"
+                            type="number"
+                            value={formData.bedrooms}
+                            onChange={(e) => handleInputChange('bedrooms', e.target.value)}
+                            placeholder="8"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="bathrooms">Bathrooms *</Label>
+                          <Input
+                            id="bathrooms"
+                            type="number"
+                            value={formData.bathrooms}
+                            onChange={(e) => handleInputChange('bathrooms', e.target.value)}
+                            placeholder="6"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="floors">Number of Floors *</Label>
+                          <Input
+                            id="floors"
+                            type="number"
+                            value={formData.floors}
+                            onChange={(e) => handleInputChange('floors', e.target.value)}
+                            placeholder="4"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="garden">Garden Area (m²) *</Label>
+                          <Input
+                            id="garden"
+                            type="number"
+                            value={formData.garden}
+                            onChange={(e) => handleInputChange('garden', e.target.value)}
+                            placeholder="500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="pool">Pool Area (m²) *</Label>
+                          <Input
+                            id="pool"
+                            type="number"
+                            value={formData.pool}
+                            onChange={(e) => handleInputChange('pool', e.target.value)}
+                            placeholder="50"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Farm Requirements */}
+                    {formData.type === 'farm' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="landArea">Land Area (m²) *</Label>
+                          <Input
+                            id="landArea"
+                            type="number"
+                            value={formData.landArea}
+                            onChange={(e) => handleInputChange('landArea', e.target.value)}
+                            placeholder="10000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="garden">Garden Area (m²) *</Label>
+                          <Input
+                            id="garden"
+                            type="number"
+                            value={formData.garden}
+                            onChange={(e) => handleInputChange('garden', e.target.value)}
+                            placeholder="5000"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Istraha Requirements */}
+                    {formData.type === 'istraha' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="landArea">Land Area (m²) *</Label>
+                          <Input
+                            id="landArea"
+                            type="number"
+                            value={formData.landArea}
+                            onChange={(e) => handleInputChange('landArea', e.target.value)}
+                            placeholder="2000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="garden">Garden Area (m²) *</Label>
+                          <Input
+                            id="garden"
+                            type="number"
+                            value={formData.garden}
+                            onChange={(e) => handleInputChange('garden', e.target.value)}
+                            placeholder="1000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="pool">Pool Area (m²) *</Label>
+                          <Input
+                            id="pool"
+                            type="number"
+                            value={formData.pool}
+                            onChange={(e) => handleInputChange('pool', e.target.value)}
+                            placeholder="100"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Resort Requirements */}
+                    {formData.type === 'resort' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="landArea">Land Area (m²) *</Label>
+                          <Input
+                            id="landArea"
+                            type="number"
+                            value={formData.landArea}
+                            onChange={(e) => handleInputChange('landArea', e.target.value)}
+                            placeholder="50000"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="pool">Pool Area (m²) *</Label>
+                          <Input
+                            id="pool"
+                            type="number"
+                            value={formData.pool}
+                            onChange={(e) => handleInputChange('pool', e.target.value)}
+                            placeholder="500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="gym">Gym Area (m²) *</Label>
+                          <Input
+                            id="gym"
+                            type="number"
+                            value={formData.gym}
+                            onChange={(e) => handleInputChange('gym', e.target.value)}
+                            placeholder="200"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="security">Security Features *</Label>
+                          <Input
+                            id="security"
+                            value={formData.security}
+                            onChange={(e) => handleInputChange('security', e.target.value)}
+                            placeholder="24/7 Security, CCTV"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* File Upload Section */}
                 <div className="space-y-4">
