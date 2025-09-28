@@ -1,5 +1,5 @@
-// API configuration for Netlify Functions
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// API configuration for Render backend
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // Types
 export interface Property {
@@ -78,8 +78,7 @@ class ApiService {
   private baseURL: string;
 
   constructor() {
-    // For Netlify Functions, we use relative URLs
-    this.baseURL = API_BASE_URL || '';
+    this.baseURL = API_BASE_URL;
   }
 
   private async request<T>(
@@ -166,7 +165,7 @@ class ApiService {
 
   // Health check
   async healthCheck(): Promise<ApiResponse<any>> {
-    return this.request<any>('/api/health');
+    return this.request<any>('/health');
   }
 }
 
