@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Globe, Menu, X } from 'lucide-react';
+import { Globe, Menu, X, Settings } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useLocation } from 'react-router-dom';
 import logoImage from '@/assets/logo.png';
@@ -87,6 +87,19 @@ const Header = () => {
               <Globe className="h-4 w-4" />
               <span className="font-medium">{language === 'ar' ? 'EN' : 'العربية'}</span>
             </Button>
+            
+            {/* Admin Link */}
+            <Link to="/admin">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="font-medium">Admin</span>
+              </Button>
+            </Link>
+            
             <Button variant="secondary" size="sm" className="font-medium">
               {t('contact.title')}
             </Button>
@@ -137,6 +150,15 @@ const Header = () => {
                 <Globe className="h-4 w-4" />
                 <span>{language === 'ar' ? 'English' : 'العربية'}</span>
               </Button>
+              
+              {/* Mobile Admin Link */}
+              <Link to="/admin" onClick={closeMobileMenu}>
+                <Button variant="outline" className="w-full justify-start gap-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Admin</span>
+                </Button>
+              </Link>
+              
               <Button variant="secondary" onClick={closeMobileMenu}>
                 {t('contact.title')}
               </Button>
