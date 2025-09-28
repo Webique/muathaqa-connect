@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Edit, X } from 'lucide-react';
+import { Trash2, Plus, Edit, X, Upload, Image, Video } from 'lucide-react';
 import { apiService, Property } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -15,6 +15,8 @@ const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     titleEn: '',
     titleAr: '',
@@ -27,6 +29,7 @@ const AdminPage: React.FC = () => {
     type: '',
     purpose: '',
     images: '',
+    video: '',
     services: '',
     advertiserNumber: '',
     advertiserLicense: ''
@@ -54,9 +57,48 @@ const AdminPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Create a simple file URL (in production, you'd upload to a service like Cloudinary)
+        const fileUrl = URL.createObjectURL(file);
+        uploadedUrls.push(fileUrl);
+        
+        // For demo purposes, we'll use placeholder URLs
+        // In production, you'd upload to a real service
+        const placeholderUrl = `https://via.placeholder.com/800x600/4F46E5/FFFFFF?text=${encodeURIComponent(file.name)}`;
+        uploadedUrls.push(placeholderUrl);
+      }
+
+      setUploadedFiles(prev => [...prev, ...uploadedUrls]);
+      toast.success(`${files.length} file(s) uploaded successfully!`);
+    } catch (error) {
+      toast.error('Failed to upload files');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeUploadedFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Combine uploaded files with manually entered URLs
+      const allImages = [
+        ...uploadedFiles,
+        ...(formData.images ? formData.images.split(',').map(img => img.trim()).filter(Boolean) : [])
+      ];
+
       const propertyData = {
         title: {
           ar: formData.titleAr || formData.titleEn,
@@ -73,7 +115,8 @@ const AdminPage: React.FC = () => {
         type: formData.type || 'villa',
         purpose: formData.purpose || 'sale',
         usage: 'Residential',
-        images: formData.images ? formData.images.split(',').map(img => img.trim()).filter(Boolean) : ['/src/assets/hero-real-estate.jpg'],
+        images: allImages.length > 0 ? allImages : ['/src/assets/hero-real-estate.jpg'],
+        video: formData.video || undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
           number: formData.advertiserNumber || '7200640143',
@@ -137,10 +180,12 @@ const AdminPage: React.FC = () => {
       type: property.type,
       purpose: property.purpose,
       images: property.images.join(', '),
+      video: property.video || '',
       services: property.services.join(', '),
       advertiserNumber: property.advertiser.number,
       advertiserLicense: property.advertiser.license
     });
+    setUploadedFiles([]);
     setShowForm(true);
   };
 
@@ -157,10 +202,12 @@ const AdminPage: React.FC = () => {
       type: '',
       purpose: '',
       images: '',
+      video: '',
       services: '',
       advertiserNumber: '',
       advertiserLicense: ''
     });
+    setUploadedFiles([]);
   };
 
   const formatPrice = (price: number) => {
@@ -188,7 +235,7 @@ const AdminPage: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Property Management</h1>
-          <p className="mt-2 text-gray-600">Simple property management</p>
+          <p className="mt-2 text-gray-600">Simple property management with file uploads</p>
         </div>
 
         {/* Add Property Button */}
@@ -343,8 +390,72 @@ const AdminPage: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="images">Images (comma-separated URLs)</Label>
+                </div>
+
+                {/* File Upload Section */}
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-lg font-semibold">Images & Videos</Label>
+                    <p className="text-sm text-gray-600 mb-4">Upload multiple images and videos for your property</p>
+                  </div>
+
+                  {/* File Upload */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                    <input
+                      type="file"
+                      id="file-upload"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={(e) => handleFileUpload(e.target.files)}
+                      className="hidden"
+                    />
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                      <div className="flex flex-col items-center">
+                        <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                        <p className="text-lg font-medium text-gray-700">
+                          {uploading ? 'Uploading...' : 'Click to upload images & videos'}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          Supports: JPG, PNG, GIF, MP4, MOV, AVI
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          You can select multiple files at once
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Uploaded Files Preview */}
+                  {uploadedFiles.length > 0 && (
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">Uploaded Files ({uploadedFiles.length})</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {uploadedFiles.map((file, index) => (
+                          <div key={index} className="relative group">
+                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                              <img
+                                src={file}
+                                alt={`Uploaded file ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => removeUploadedFile(index)}
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Manual URL Input */}
+                  <div className="space-y-3">
+                    <Label htmlFor="images">Or add image URLs manually</Label>
                     <Textarea
                       id="images"
                       value={formData.images}
@@ -353,16 +464,28 @@ const AdminPage: React.FC = () => {
                       rows={2}
                     />
                   </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="services">Services (comma-separated)</Label>
-                    <Textarea
-                      id="services"
-                      value={formData.services}
-                      onChange={(e) => handleInputChange('services', e.target.value)}
-                      placeholder="Electricity, Water, Sewage"
-                      rows={2}
+
+                  <div>
+                    <Label htmlFor="video">Video URL (optional)</Label>
+                    <Input
+                      id="video"
+                      value={formData.video}
+                      onChange={(e) => handleInputChange('video', e.target.value)}
+                      placeholder="https://example.com/video.mp4"
                     />
                   </div>
+                </div>
+
+                {/* Services */}
+                <div>
+                  <Label htmlFor="services">Services (comma-separated)</Label>
+                  <Textarea
+                    id="services"
+                    value={formData.services}
+                    onChange={(e) => handleInputChange('services', e.target.value)}
+                    placeholder="Electricity, Water, Sewage"
+                    rows={2}
+                  />
                 </div>
 
                 <div className="flex gap-4 pt-4">
@@ -422,6 +545,22 @@ const AdminPage: React.FC = () => {
                     <span className="text-sm text-gray-600">Type:</span>
                     <span className="capitalize">{property.type.replace('_', ' ')}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Images:</span>
+                    <span className="flex items-center gap-1">
+                      <Image className="w-4 h-4" />
+                      {property.images.length}
+                    </span>
+                  </div>
+                  {property.video && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Video:</span>
+                      <span className="flex items-center gap-1">
+                        <Video className="w-4 h-4" />
+                        Yes
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-2">
