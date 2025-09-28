@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Edit, Eye } from 'lucide-react';
+import { Trash2, Plus, Edit, X } from 'lucide-react';
 import { apiService, Property } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -16,32 +16,20 @@ const AdminPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [formData, setFormData] = useState({
-    titleAr: '',
     titleEn: '',
-    locationAr: '',
+    titleAr: '',
     locationEn: '',
+    locationAr: '',
     price: '',
     area: '',
     bedrooms: '',
     bathrooms: '',
     type: '',
     purpose: '',
-    usage: '',
     images: '',
     services: '',
     advertiserNumber: '',
-    advertiserLicense: '',
-    floors: '',
-    guestLounge: '',
-    facade: '',
-    streetWidthNorth: '',
-    dailyLivingRoom: '',
-    diningRoom: '',
-    maidRoom: '',
-    driverRoom: '',
-    kitchen: '',
-    storageRoom: '',
-    elevator: ''
+    advertiserLicense: ''
   });
 
   useEffect(() => {
@@ -71,47 +59,47 @@ const AdminPage: React.FC = () => {
     try {
       const propertyData = {
         title: {
-          ar: formData.titleAr,
+          ar: formData.titleAr || formData.titleEn,
           en: formData.titleEn
         },
         location: {
-          ar: formData.locationAr,
-          en: formData.locationEn
+          ar: formData.locationAr || formData.locationEn,
+          en: formData.locationEn || 'Saudi Arabia'
         },
         price: parseInt(formData.price),
-        area: parseInt(formData.area),
-        bedrooms: parseInt(formData.bedrooms),
-        bathrooms: parseInt(formData.bathrooms),
-        type: formData.type,
-        purpose: formData.purpose,
-        usage: formData.usage,
-        images: formData.images.split(',').map(img => img.trim()).filter(Boolean),
-        services: formData.services.split(',').map(s => s.trim()).filter(Boolean),
+        area: parseInt(formData.area) || 0,
+        bedrooms: parseInt(formData.bedrooms) || 0,
+        bathrooms: parseInt(formData.bathrooms) || 0,
+        type: formData.type || 'villa',
+        purpose: formData.purpose || 'sale',
+        usage: 'Residential',
+        images: formData.images ? formData.images.split(',').map(img => img.trim()).filter(Boolean) : ['/src/assets/hero-real-estate.jpg'],
+        services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
-          number: formData.advertiserNumber,
-          license: formData.advertiserLicense
+          number: formData.advertiserNumber || '7200640143',
+          license: formData.advertiserLicense || '1200027687'
         },
         features: {
-          floors: parseInt(formData.floors) || 0,
-          guestLounge: parseInt(formData.guestLounge) || 0,
-          facade: formData.facade,
-          streetWidthNorth: parseInt(formData.streetWidthNorth) || 0,
-          dailyLivingRoom: parseInt(formData.dailyLivingRoom) || 0,
-          diningRoom: parseInt(formData.diningRoom) || 0,
-          maidRoom: parseInt(formData.maidRoom) || 0,
-          driverRoom: parseInt(formData.driverRoom) || 0,
-          kitchen: parseInt(formData.kitchen) || 0,
-          storageRoom: parseInt(formData.storageRoom) || 0,
-          elevator: parseInt(formData.elevator) || 0
+          floors: 1,
+          guestLounge: 0,
+          facade: 'North',
+          streetWidthNorth: 10,
+          dailyLivingRoom: 1,
+          diningRoom: 1,
+          maidRoom: 0,
+          driverRoom: 0,
+          kitchen: 1,
+          storageRoom: 0,
+          elevator: 0
         }
       };
 
       if (editingProperty) {
         await apiService.updateProperty(editingProperty._id, propertyData);
-        toast.success('Property updated successfully');
+        toast.success('Property updated successfully!');
       } else {
         await apiService.createProperty(propertyData);
-        toast.success('Property created successfully');
+        toast.success('Property added successfully!');
       }
 
       setShowForm(false);
@@ -124,10 +112,10 @@ const AdminPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this property?')) {
+    if (window.confirm('Delete this property?')) {
       try {
         await apiService.deleteProperty(id);
-        toast.success('Property deleted successfully');
+        toast.success('Property deleted!');
         loadProperties();
       } catch (error) {
         toast.error('Failed to delete property');
@@ -138,64 +126,40 @@ const AdminPage: React.FC = () => {
   const handleEdit = (property: Property) => {
     setEditingProperty(property);
     setFormData({
-      titleAr: property.title.ar,
       titleEn: property.title.en,
-      locationAr: property.location.ar,
+      titleAr: property.title.ar,
       locationEn: property.location.en,
+      locationAr: property.location.ar,
       price: property.price.toString(),
       area: property.area.toString(),
       bedrooms: property.bedrooms.toString(),
       bathrooms: property.bathrooms.toString(),
       type: property.type,
       purpose: property.purpose,
-      usage: property.usage,
       images: property.images.join(', '),
       services: property.services.join(', '),
       advertiserNumber: property.advertiser.number,
-      advertiserLicense: property.advertiser.license,
-      floors: property.features.floors.toString(),
-      guestLounge: property.features.guestLounge.toString(),
-      facade: property.features.facade,
-      streetWidthNorth: property.features.streetWidthNorth.toString(),
-      dailyLivingRoom: property.features.dailyLivingRoom.toString(),
-      diningRoom: property.features.diningRoom.toString(),
-      maidRoom: property.features.maidRoom.toString(),
-      driverRoom: property.features.driverRoom.toString(),
-      kitchen: property.features.kitchen.toString(),
-      storageRoom: property.features.storageRoom.toString(),
-      elevator: property.features.elevator.toString()
+      advertiserLicense: property.advertiser.license
     });
     setShowForm(true);
   };
 
   const resetForm = () => {
     setFormData({
-      titleAr: '',
       titleEn: '',
-      locationAr: '',
+      titleAr: '',
       locationEn: '',
+      locationAr: '',
       price: '',
       area: '',
       bedrooms: '',
       bathrooms: '',
       type: '',
       purpose: '',
-      usage: '',
       images: '',
       services: '',
       advertiserNumber: '',
-      advertiserLicense: '',
-      floors: '',
-      guestLounge: '',
-      facade: '',
-      streetWidthNorth: '',
-      dailyLivingRoom: '',
-      diningRoom: '',
-      maidRoom: '',
-      driverRoom: '',
-      kitchen: '',
-      storageRoom: '',
-      elevator: ''
+      advertiserLicense: ''
     });
   };
 
@@ -220,12 +184,14 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Property Management</h1>
-          <p className="mt-2 text-gray-600">Manage your property listings</p>
+          <p className="mt-2 text-gray-600">Simple property management</p>
         </div>
 
+        {/* Add Property Button */}
         <div className="mb-6">
           <Button 
             onClick={() => {
@@ -233,45 +199,63 @@ const AdminPage: React.FC = () => {
               setEditingProperty(null);
               resetForm();
             }}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             {showForm ? 'Cancel' : 'Add New Property'}
           </Button>
         </div>
 
+        {/* Simple Form */}
         {showForm && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>{editingProperty ? 'Edit Property' : 'Add New Property'}</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                {editingProperty ? 'Edit Property' : 'Add New Property'}
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingProperty(null);
+                    resetForm();
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Required Fields */}
                   <div>
-                    <Label htmlFor="titleAr">Title (Arabic)</Label>
-                    <Input
-                      id="titleAr"
-                      value={formData.titleAr}
-                      onChange={(e) => handleInputChange('titleAr', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="titleEn">Title (English)</Label>
+                    <Label htmlFor="titleEn">Property Name (English) *</Label>
                     <Input
                       id="titleEn"
                       value={formData.titleEn}
                       onChange={(e) => handleInputChange('titleEn', e.target.value)}
+                      placeholder="e.g., Villa in Al Malqa"
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="locationAr">Location (Arabic)</Label>
+                    <Label htmlFor="titleAr">Property Name (Arabic)</Label>
                     <Input
-                      id="locationAr"
-                      value={formData.locationAr}
-                      onChange={(e) => handleInputChange('locationAr', e.target.value)}
+                      id="titleAr"
+                      value={formData.titleAr}
+                      onChange={(e) => handleInputChange('titleAr', e.target.value)}
+                      placeholder="مثال: فيلا في الملقا"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price">Price (SAR) *</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) => handleInputChange('price', e.target.value)}
+                      placeholder="8000000"
                       required
                     />
                   </div>
@@ -281,17 +265,16 @@ const AdminPage: React.FC = () => {
                       id="locationEn"
                       value={formData.locationEn}
                       onChange={(e) => handleInputChange('locationEn', e.target.value)}
-                      required
+                      placeholder="e.g., Riyadh, Saudi Arabia"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="price">Price (SAR)</Label>
+                    <Label htmlFor="locationAr">Location (Arabic)</Label>
                     <Input
-                      id="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) => handleInputChange('price', e.target.value)}
-                      required
+                      id="locationAr"
+                      value={formData.locationAr}
+                      onChange={(e) => handleInputChange('locationAr', e.target.value)}
+                      placeholder="مثال: الرياض، المملكة العربية السعودية"
                     />
                   </div>
                   <div>
@@ -301,7 +284,7 @@ const AdminPage: React.FC = () => {
                       type="number"
                       value={formData.area}
                       onChange={(e) => handleInputChange('area', e.target.value)}
-                      required
+                      placeholder="600"
                     />
                   </div>
                   <div>
@@ -311,7 +294,7 @@ const AdminPage: React.FC = () => {
                       type="number"
                       value={formData.bedrooms}
                       onChange={(e) => handleInputChange('bedrooms', e.target.value)}
-                      required
+                      placeholder="6"
                     />
                   </div>
                   <div>
@@ -321,7 +304,7 @@ const AdminPage: React.FC = () => {
                       type="number"
                       value={formData.bathrooms}
                       onChange={(e) => handleInputChange('bathrooms', e.target.value)}
-                      required
+                      placeholder="3"
                     />
                   </div>
                   <div>
@@ -360,59 +343,31 @@ const AdminPage: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label htmlFor="usage">Usage</Label>
-                    <Select value={formData.usage} onValueChange={(value) => handleInputChange('usage', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select usage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Residential">Residential</SelectItem>
-                        <SelectItem value="Commercial">Commercial</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="images">Images (comma-separated URLs)</Label>
                     <Textarea
                       id="images"
                       value={formData.images}
                       onChange={(e) => handleInputChange('images', e.target.value)}
                       placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                      rows={2}
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="services">Services (comma-separated)</Label>
                     <Textarea
                       id="services"
                       value={formData.services}
                       onChange={(e) => handleInputChange('services', e.target.value)}
                       placeholder="Electricity, Water, Sewage"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="advertiserNumber">Advertiser Number</Label>
-                    <Input
-                      id="advertiserNumber"
-                      value={formData.advertiserNumber}
-                      onChange={(e) => handleInputChange('advertiserNumber', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="advertiserLicense">Advertiser License</Label>
-                    <Input
-                      id="advertiserLicense"
-                      value={formData.advertiserLicense}
-                      onChange={(e) => handleInputChange('advertiserLicense', e.target.value)}
-                      required
+                      rows={2}
                     />
                   </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                    {editingProperty ? 'Update Property' : 'Create Property'}
+                <div className="flex gap-4 pt-4">
+                  <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-6 py-2">
+                    {editingProperty ? 'Update Property' : 'Add Property'}
                   </Button>
                   <Button 
                     type="button" 
@@ -422,6 +377,7 @@ const AdminPage: React.FC = () => {
                       setEditingProperty(null);
                       resetForm();
                     }}
+                    className="px-6 py-2"
                   >
                     Cancel
                   </Button>
@@ -431,6 +387,7 @@ const AdminPage: React.FC = () => {
           </Card>
         )}
 
+        {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <Card key={property._id} className="hover:shadow-lg transition-shadow">
@@ -444,7 +401,7 @@ const AdminPage: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Price:</span>
                     <span className="font-semibold text-green-600">{formatPrice(property.price)}</span>
@@ -465,13 +422,9 @@ const AdminPage: React.FC = () => {
                     <span className="text-sm text-gray-600">Type:</span>
                     <span className="capitalize">{property.type.replace('_', ' ')}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Purpose:</span>
-                    <Badge variant="outline" className="capitalize">{property.purpose}</Badge>
-                  </div>
                 </div>
 
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -508,4 +461,3 @@ const AdminPage: React.FC = () => {
 };
 
 export default AdminPage;
-// Admin page deployment fix

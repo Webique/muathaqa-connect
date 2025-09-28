@@ -88,15 +88,13 @@ const Header = () => {
               <span className="font-medium">{language === 'ar' ? 'EN' : 'العربية'}</span>
             </Button>
             
-            {/* Admin Link */}
+            {/* Admin Link - More Prominent */}
             <Link to="/admin">
               <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
               >
-                <Settings className="h-4 w-4" />
-                <span className="font-medium">Admin</span>
+                <Settings className="h-4 w-4 mr-2" />
+                Admin Panel
               </Button>
             </Link>
             
@@ -151,11 +149,11 @@ const Header = () => {
                 <span>{language === 'ar' ? 'English' : 'العربية'}</span>
               </Button>
               
-              {/* Mobile Admin Link */}
+              {/* Mobile Admin Link - More Prominent */}
               <Link to="/admin" onClick={closeMobileMenu}>
-                <Button variant="outline" className="w-full justify-start gap-2">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white justify-start gap-2">
                   <Settings className="h-4 w-4" />
-                  <span>Admin</span>
+                  <span>Admin Panel</span>
                 </Button>
               </Link>
               
