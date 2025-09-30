@@ -46,6 +46,7 @@ const translations = {
     'filters.typePlaceholder': 'اختر النوع',
     'filters.purpose': 'الغرض',
     'filters.purposePlaceholder': 'اختر الغرض',
+    'filters.search': 'بحث',
     // Purposes
     'purpose.sale': 'للبيع',
     'purpose.rent': 'للإيجار',
@@ -208,6 +209,7 @@ const translations = {
     'filters.typePlaceholder': 'Select Type',
     'filters.purpose': 'Purpose',
     'filters.purposePlaceholder': 'Select Purpose',
+    'filters.search': 'Search',
     // Purposes
     'purpose.sale': 'For Sale',
     'purpose.rent': 'For Rent',
