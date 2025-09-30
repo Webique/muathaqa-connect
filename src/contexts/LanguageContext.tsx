@@ -35,7 +35,17 @@ const translations = {
     'search.placeholder.purpose': 'اختر الغرض',
     'search.placeholder.type': 'اختر النوع',
     'search.placeholder.buildingType': 'اختر نوع البناء',
+    // Missing Search Translations
+    'search.search': 'بحث',
+    'search.searching': 'جاري البحث...',
     
+    // Missing Filter Translations
+    'filters.city': 'المدينة',
+    'filters.cityPlaceholder': 'اختر المدينة',
+    'filters.type': 'نوع العقار',
+    'filters.typePlaceholder': 'اختر النوع',
+    'filters.purpose': 'الغرض',
+    'filters.purposePlaceholder': 'اختر الغرض',
     // Purposes
     'purpose.sale': 'للبيع',
     'purpose.rent': 'للإيجار',
@@ -187,7 +197,17 @@ const translations = {
     'search.placeholder.purpose': 'Select Purpose',
     'search.placeholder.type': 'Select Type',
     'search.placeholder.buildingType': 'Select Building Type',
+    // Missing Search Translations
+    'search.search': 'Search',
+    'search.searching': 'Searching...',
     
+    // Missing Filter Translations
+    'filters.city': 'City',
+    'filters.cityPlaceholder': 'Select City',
+    'filters.type': 'Property Type',
+    'filters.typePlaceholder': 'Select Type',
+    'filters.purpose': 'Purpose',
+    'filters.purposePlaceholder': 'Select Purpose',
     // Purposes
     'purpose.sale': 'For Sale',
     'purpose.rent': 'For Rent',
