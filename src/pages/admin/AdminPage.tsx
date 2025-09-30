@@ -167,7 +167,7 @@ const AdminPage: React.FC = () => {
         return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'facade', 'streetWidth'];
       case 'apartment_tower':
       case 'apartment_building':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'age'];
+        return [...baseRequired, 'bedrooms'];
       case 'land':
         return [...baseRequired, 'planNumber', 'blockNumber', 'parcelNumber', 'allowedUsage', 'maxBuildingHeight'];
       case 'building':
