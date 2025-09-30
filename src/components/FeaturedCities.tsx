@@ -138,7 +138,7 @@ const FeaturedCities = () => {
         <div className="text-center mt-12">
           <Link to="/cities">
             <button className="btn-outline group whitespace-nowrap">
-              <span>{isRTL ? 'عرض جميع المدن' : 'View All Cities'}</span>
+              <span>{isRTL ? 'عرض جميع العقارات' : 'View All Cities'}</span>
               <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
             </button>
           </Link>
