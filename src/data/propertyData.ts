@@ -128,7 +128,7 @@ export const cities = {
       { ar: 'الرياض', en: 'Al-Riyadh' },
       { ar: 'السلمانية الشمالية', en: 'North Al-Salmaniya' },
       { ar: 'السلمانية الجنوبية', en: 'South Al-Salmaniya' }
-    ]]
+    ]
   }
 };
 
