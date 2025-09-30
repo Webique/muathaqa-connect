@@ -15,6 +15,7 @@ export interface Property {
   propertyCode: string;
   images: string[];
   video?: string;
+  description?: string;
   price: number;
   area: number;
   bedrooms: number;

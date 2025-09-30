@@ -312,10 +312,7 @@ const PropertyDetail = () => {
                 {isRTL ? 'الوصف' : 'Description'}
               </h2>
               <div className="text-muted-foreground leading-relaxed">
-                {property.description || (isRTL ? 
-                  'عقار مميز يتميز بمساحات واسعة وتصميم عصري مع جميع المرافق الحديثة والخدمات المتكاملة. موقع استراتيجي مناسب للعائلات التي تبحث عن الراحة والرفاهية. يتميز العقار بموقعه المتميز في قلب المدينة مع سهولة الوصول إلى جميع الخدمات والمرافق الحيوية.' :
-                  'A distinguished property featuring spacious areas and modern design with all modern facilities and integrated services. Strategic location suitable for families looking for comfort and luxury. The property is distinguished by its prime location in the heart of the city with easy access to all vital services and facilities.'
-                )}
+                {property.description || (isRTL ? 'لا يوجد وصف متاح' : 'No description available')}
               </div>
             </div>
 

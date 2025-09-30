@@ -17,6 +17,7 @@ const propertySchema = new mongoose.Schema({
   },
   images: [{ type: String }],
   video: { type: String },
+  description: { type: String },
   price: { 
     type: Number, 
     required: true,
