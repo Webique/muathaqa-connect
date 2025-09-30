@@ -159,37 +159,10 @@ const AdminPage: React.FC = () => {
     });
   };
 
-  const getRequiredFields = (propertyType: string) => {
-    const baseRequired = ['titleEn', 'price', 'area', 'type', 'purpose'];
-    
-    switch (propertyType) {
-      case 'villa':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors', 'facade', 'streetWidth'];
-      case 'apartment_tower':
-      case 'apartment_building':
-        return [...baseRequired, 'bedrooms'];
-      case 'land':
-        return [...baseRequired, 'planNumber', 'blockNumber', 'parcelNumber', 'allowedUsage', 'maxBuildingHeight'];
-      case 'building':
-        return [...baseRequired, 'floors', 'apartments', 'shops', 'meters'];
-      case 'store':
-      case 'showroom':
-        return [...baseRequired, 'scale', 'scaleArea', 'age'];
-      case 'townhouse':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors'];
-      case 'mansion':
-        return [...baseRequired, 'bedrooms', 'bathrooms', 'floors'];
-      case 'farm':
-        return [...baseRequired, 'landArea'];
-      case 'istraha':
-        return [...baseRequired, 'landArea'];
-      case 'resort':
-        return [...baseRequired, 'landArea'];
-      case 'office':
-        return [...baseRequired, 'commercialArea'];
-      default:
-        return baseRequired;
-    }
+    const getRequiredFields = (propertyType: string) => {
+    // Only require the absolute basics - title, price, area, type
+    // All other fields (purpose, bedrooms, bathrooms, floors, etc.) are now optional
+    return ['titleEn', 'price', 'area', 'type'];
   };
 
   const validateForm = () => {
