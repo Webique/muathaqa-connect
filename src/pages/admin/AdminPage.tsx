@@ -111,14 +111,16 @@ const AdminPage: React.FC = () => {
   };
 
   const handleFileUpload = async (files: FileList | null) => {
+    console.log('Starting file upload...', files);
     if (!files || files.length === 0) return;
-
+    
     setUploading(true);
     const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string}[] = [];
-
+    
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        console.log('Processing file:', file.name, file.type, file.size);
         
         const isImage = file.type.startsWith('image/');
         const isVideo = file.type.startsWith('video/');
@@ -134,65 +136,24 @@ const AdminPage: React.FC = () => {
         }
 
         const fileUrl = URL.createObjectURL(file);
+        console.log('Created file URL:', fileUrl);
         
-        // Convert image to base64 for storage with compression
+        // Convert image to base64 for storage (simplified)
         let base64 = '';
         if (isImage) {
-          try {
-            base64 = await new Promise((resolve, reject) => {
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              const img = new Image();
-              
-              img.onload = () => {
-                try {
-                  // Calculate new dimensions (max 800px width, maintain aspect ratio)
-                  const maxWidth = 800;
-                  const maxHeight = 600;
-                  let { width, height } = img;
-                  
-                  if (width > maxWidth) {
-                    height = (height * maxWidth) / width;
-                    width = maxWidth;
-                  }
-                  
-                  if (height > maxHeight) {
-                    width = (width * maxHeight) / height;
-                    height = maxHeight;
-                  }
-                  
-                  // Set canvas dimensions
-                  canvas.width = width;
-                  canvas.height = height;
-                  
-                  // Draw and compress image
-                  ctx.drawImage(img, 0, 0, width, height);
-                  
-                  // Convert to base64 with compression (0.7 quality)
-                  const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                  resolve(compressedDataUrl);
-                } catch (error) {
-                  console.error('Canvas error:', error);
-                  reject(error);
-                }
-              };
-              
-              img.onerror = () => {
-                console.error('Image load error');
-                reject(new Error('Failed to load image'));
-              };
-              
-              img.src = URL.createObjectURL(file);
-            });
-          } catch (error) {
-            console.error('Base64 conversion error:', error);
-            // Fallback to simple base64 conversion without compression
-            base64 = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(file);
-            });
-          }
+          console.log('Converting image to base64...');
+          base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              console.log('Base64 conversion successful');
+              resolve(reader.result as string);
+            };
+            reader.onerror = () => {
+              console.error('Base64 conversion failed');
+              reject(new Error('Failed to read file'));
+            };
+            reader.readAsDataURL(file);
+          });
         }
         
         newFiles.push({
