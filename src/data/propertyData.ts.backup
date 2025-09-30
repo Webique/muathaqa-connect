@@ -89,22 +89,30 @@ export const cities = {
       { ar: 'المركزي', en: 'Central' },
       { ar: 'النهضة', en: 'Al-Nahda' },
       { ar: 'الصالحية', en: 'Al-Salihiya' },
-    ]
-  },
-  mubarraz: {
-    ar: 'المبرز',
-    en: 'Mubarraz',
-    districts: [
-      { ar: 'الحزم', en: 'Al-Hazm' },
-      { ar: 'الراشدية', en: 'Al-Rashidiya' },
-    ]
-  },
-  oyoun: {
-    ar: 'العيون',
-    en: 'Oyoun',
-    districts: [
-      { ar: 'المركز', en: 'Center' },
-      { ar: 'الشمالية', en: 'North' },
+      { ar: 'حي الهدى', en: 'Al-Huda District' },
+      { ar: 'حي جنوب الهفوف', en: 'South Hofuf District' },
+      { ar: 'حي جنوب منسوبي التعليم', en: 'South Education Staff District' },
+      { ar: 'حي السلمانية الجنوبية', en: 'South Salmaniya District' },
+      { ar: 'حي الطرف', en: 'Al-Taraf District' },
+      { ar: 'حي الرابية', en: 'Al-Rabiya District' },
+      { ar: 'حي الواحة', en: 'Al-Waha District' },
+      { ar: 'حي الرقيقة', en: 'Al-Raqiqa District' },
+      { ar: 'حي النايفية', en: 'Al-Naifiya District' },
+      { ar: 'حي الراشدية', en: 'Al-Rashidiya District' },
+      { ar: 'حي الورود', en: 'Al-Wurud District' },
+      { ar: 'حي محاسن البلدية', en: 'Municipal Virtues District' },
+      { ar: 'حي البندرية', en: 'Al-Bandariya District' },
+      { ar: 'حي العويمرية', en: 'Al-Awaimiriya District' },
+      { ar: 'حي السلمانية الشمالية', en: 'North Salmaniya District' },
+      { ar: 'حي الجامعيين', en: 'University Graduates District' },
+      { ar: 'حي القادسية', en: 'Al-Qadisiyah District' },
+      { ar: 'حي مخطط علي الخرس و أحمد الشهاب', en: 'Ali Al-Khars and Ahmed Al-Shahab Plan District' },
+      { ar: 'حي وسط المدينة', en: 'City Center District' },
+      { ar: 'حي الجشة', en: 'Al-Jashah District' },
+      { ar: 'حي المحمدية', en: 'Al-Mohammadiya District' },
+      { ar: 'حي المطيرفي', en: 'Al-Mutairfi District' },
+      { ar: 'حي العزيزية', en: 'Al-Aziziyah District' },
+      { ar: 'حي البصيرة', en: 'Al-Basira District' },
     ]
   }
 };
@@ -126,6 +134,7 @@ export const buildingTypes = [
   { key: 'apartment_tower', ar: 'شقة في برج', en: 'Apartment in a tower' },
   { key: 'apartment_building', ar: 'شقة في مبنى', en: 'Apartment in a Building' },
   { key: 'land', ar: 'أرض', en: 'Land' },
+  { key: 'building', ar: 'عمارة', en: 'Building' },
   { key: 'townhouse', ar: 'تاون هاوس', en: 'Townhouse' },
   { key: 'mansion', ar: 'قصر', en: 'Mansion' },
   { key: 'farm', ar: 'مزرعة', en: 'Farm' },
@@ -194,12 +203,16 @@ export const properties = [
       ar: 'الرياض، المملكة العربية السعودية',
       en: 'Riyadh, Saudi Arabia'
     },
+    propertyCode: 'MU-001',
     images: [
       '/src/assets/hero-real-estate.jpg',
-      '/src/assets/hero-real-estate.jpg',
-      '/src/assets/hero-real-estate.jpg',
+      '/src/assets/city-dammam.jpg',
+      '/src/assets/city-dhahran.jpg',
+      '/src/assets/city-jubail.jpg',
+      '/src/assets/city-khobar.jpg',
       '/src/assets/hero-real-estate.jpg'
     ],
+    video: '/src/assets/property-video.mp4',
     price: 8000000,
     area: 600,
     bedrooms: 6,
@@ -236,6 +249,7 @@ export const properties = [
       ar: 'الخبر، المملكة العربية السعودية',
       en: 'Khobar, Saudi Arabia'
     },
+    propertyCode: 'MU-002',
     images: [
       '/src/assets/city-khobar.jpg',
       '/src/assets/city-khobar.jpg',
@@ -277,6 +291,7 @@ export const properties = [
       ar: 'الدمام، المملكة العربية السعودية',
       en: 'Dammam, Saudi Arabia'
     },
+    propertyCode: 'MU-003',
     images: [
       '/src/assets/city-dammam.jpg',
       '/src/assets/city-dammam.jpg'
