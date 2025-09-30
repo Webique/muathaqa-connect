@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import Header from "@/components/Header";
+import PageWrapper from "@/components/PageWrapper";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Cities from "./pages/Cities";
@@ -24,6 +25,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Header />
+            <PageWrapper>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
@@ -33,6 +35,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+          </PageWrapper>
           </BrowserRouter>
         </SearchProvider>
       </LanguageProvider>
