@@ -33,6 +33,7 @@ const AdminPage: React.FC = () => {
     services: '',
     advertiserNumber: '',
     advertiserLicense: '',
+    propertyCode: '',
     
     // Common Features
     floors: '',
@@ -375,6 +376,7 @@ const AdminPage: React.FC = () => {
       services: property.services.join(', '),
       advertiserNumber: property.advertiser.number,
       advertiserLicense: property.advertiser.license,
+      propertyCode: property.propertyCode,
       floors: property.features.floors?.toString() || '',
       facade: property.features.facade || '',
       streetWidth: property.features.streetWidthNorth?.toString() || '',
@@ -644,6 +646,40 @@ const AdminPage: React.FC = () => {
                           <SelectItem value="investment">For Investment</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                  </div>
+                  
+                  {/* Advertiser Details */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-medium text-gray-800">تفاصيل المعلن / Advertiser Details</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <Label htmlFor="propertyCode">كود العقار / Property Code</Label>
+                        <Input
+                          id="propertyCode"
+                          value={formData.propertyCode}
+                          onChange={(e) => handleInputChange('propertyCode', e.target.value)}
+                          placeholder="MU-1759264247416"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="advertiserNumber">رقم المعلن / Advertiser Number</Label>
+                        <Input
+                          id="advertiserNumber"
+                          value={formData.advertiserNumber}
+                          onChange={(e) => handleInputChange('advertiserNumber', e.target.value)}
+                          placeholder="7200640143"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="advertiserLicense">رخصة فال / License Number</Label>
+                        <Input
+                          id="advertiserLicense"
+                          value={formData.advertiserLicense}
+                          onChange={(e) => handleInputChange('advertiserLicense', e.target.value)}
+                          placeholder="1200027687"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
