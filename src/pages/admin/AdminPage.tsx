@@ -238,6 +238,9 @@ const AdminPage: React.FC = () => {
         return baseFeatures;
       };
 
+      // Generate unique property code
+      const propertyCode = `MU-${Date.now()}`;
+      
       const propertyData = {
         title: {
           ar: formData.titleAr.trim() || formData.titleEn.trim(),
@@ -247,10 +250,11 @@ const AdminPage: React.FC = () => {
           ar: formData.locationAr.trim() || formData.locationEn.trim() || 'Saudi Arabia',
           en: formData.locationEn.trim() || 'Saudi Arabia'
         },
+        propertyCode: propertyCode,
         price: parseInt(formData.price) || 0,
         area: parseInt(formData.area) || 0,
-        bedrooms: parseInt(formData.bedrooms) || 0,
-        bathrooms: parseInt(formData.bathrooms) || 0,
+        bedrooms: Math.max(0, parseInt(formData.bedrooms) || 0),
+        bathrooms: Math.max(0, parseInt(formData.bathrooms) || 0),
         type: formData.type || 'villa',
         purpose: formData.purpose || 'sale',
         usage: formData.type === 'land' || formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom' ? 'Commercial' : 'Residential',

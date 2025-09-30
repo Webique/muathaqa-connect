@@ -30,13 +30,15 @@ const propertySchema = new mongoose.Schema({
   },
   bedrooms: { 
     type: Number, 
-    required: true,
-    min: 0 
+    required: false,
+    min: 0,
+    default: 0
   },
   bathrooms: { 
     type: Number, 
-    required: true,
-    min: 0 
+    required: false,
+    min: 0,
+    default: 0
   },
   type: { 
     type: String, 
