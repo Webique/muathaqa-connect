@@ -15,7 +15,7 @@ const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<{file: File, url: string, type: 'image' | 'video'}[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{file?: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean}[]>([]);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     // Basic Information
@@ -115,7 +115,7 @@ const AdminPage: React.FC = () => {
     if (!files || files.length === 0) return;
     
     setUploading(true);
-    const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string}[] = [];
+    const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean}[] = [];
     
     try {
       for (let i = 0; i < files.length; i++) {
@@ -215,18 +215,31 @@ const AdminPage: React.FC = () => {
     }
 
     try {
-      // Use the actual blob URLs for images and videos
-      // Use base64 images for storage
-      const uploadedImageUrls = uploadedFiles
-        .filter(item => item.type === 'image' && item.base64)
+      // Handle both existing and new images/videos
+      const existingImages = uploadedFiles
+        .filter(item => item.type === 'image' && item.isExisting)
+        .map(item => item.base64 || item.url); // Use base64 or URL for existing images
+      
+      const newImages = uploadedFiles
+        .filter(item => item.type === 'image' && !item.isExisting && item.base64)
         .map(item => item.base64);
       
-      const uploadedVideoUrls = uploadedFiles
-        .filter(item => item.type === 'video')
-        .map(item => item.url); // Use the blob URL instead of fake path
-
-      const allImages = uploadedImageUrls.length > 0 ? uploadedImageUrls : ['/src/assets/hero-real-estate.jpg'];
-      const allVideos = uploadedVideoUrls.length > 0 ? uploadedVideoUrls : [];
+      const existingVideos = uploadedFiles
+        .filter(item => item.type === 'video' && item.isExisting)
+        .map(item => item.url);
+      
+      const newVideos = uploadedFiles
+        .filter(item => item.type === 'video' && !item.isExisting)
+        .map(item => item.url);
+      
+      // Combine existing and new images/videos
+      const allImages = [...existingImages, ...newImages];
+      const allVideos = [...existingVideos, ...newVideos];
+      
+      // Ensure we have at least one image
+      if (allImages.length === 0) {
+        allImages.push('/src/assets/hero-real-estate.jpg');
+      }
 
       const buildFeatures = () => {
         const baseFeatures = {
@@ -328,6 +341,25 @@ const AdminPage: React.FC = () => {
 
   const handleEdit = (property: Property) => {
     setEditingProperty(property);
+    
+    // Convert existing images to uploadedFiles format
+    const existingFiles = property.images.map((imageUrl, index) => ({
+      url: imageUrl, // This will be the base64 string or URL
+      type: 'image' as const,
+      base64: imageUrl, // Store the base64 string
+      isExisting: true // Mark as existing image
+    }));
+    
+    // Add existing video if it exists
+    if (property.video) {
+      existingFiles.push({
+        url: property.video,
+        type: 'video' as const,
+        isExisting: true
+      });
+    }
+    
+    setUploadedFiles(existingFiles);
     setFormData({
       titleEn: property.title.en,
       titleAr: property.title.ar,
@@ -441,7 +473,12 @@ const AdminPage: React.FC = () => {
       residentialArea: '',
       landArea: ''
     });
-    uploadedFiles.forEach(file => URL.revokeObjectURL(file.url));
+    uploadedFiles.forEach(file => {
+    // Only revoke URL if it's not an existing image
+    if (!file.isExisting) {
+      URL.revokeObjectURL(file.url);
+    }
+  });
     setUploadedFiles([]);
   };
 
@@ -997,7 +1034,11 @@ const AdminPage: React.FC = () => {
 
                   {uploadedFiles.length > 0 && (
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium">Uploaded Files ({uploadedFiles.length})</Label>
+                      <Label className="text-sm font-medium">
+                        Uploaded Files ({uploadedFiles.length}) - 
+                        {uploadedFiles.filter(f => f.isExisting).length} existing, 
+                        {uploadedFiles.filter(f => !f.isExisting).length} new
+                      </Label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {uploadedFiles.map((fileItem, index) => (
                           <div key={index} className="relative group">
@@ -1015,13 +1056,13 @@ const AdminPage: React.FC = () => {
                               )}
                             </div>
                             <div className="absolute top-1 left-1">
-                              <Badge variant="secondary" className="text-xs">
+                              <Badge variant={fileItem.isExisting ? "default" : "secondary"} className="text-xs">
                                 {fileItem.type === 'image' ? (
                                   <Image className="w-3 h-3 mr-1" />
                                 ) : (
                                   <Video className="w-3 h-3 mr-1" />
                                 )}
-                                {fileItem.type}
+                                {fileItem.isExisting ? 'Existing' : 'New'} {fileItem.type}
                               </Badge>
                             </div>
                             <Button
