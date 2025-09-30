@@ -192,13 +192,14 @@ const AdminPage: React.FC = () => {
     }
 
     try {
+      // Use the actual blob URLs for images and videos
       const uploadedImageUrls = uploadedFiles
         .filter(item => item.type === 'image')
-        .map(item => `/uploads/${item.file.name}`);
+        .map(item => item.url); // Use the blob URL instead of fake path
       
       const uploadedVideoUrls = uploadedFiles
         .filter(item => item.type === 'video')
-        .map(item => `/uploads/${item.file.name}`);
+        .map(item => item.url); // Use the blob URL instead of fake path
 
       const allImages = uploadedImageUrls.length > 0 ? uploadedImageUrls : ['/src/assets/hero-real-estate.jpg'];
       const allVideos = uploadedVideoUrls.length > 0 ? uploadedVideoUrls : [];
