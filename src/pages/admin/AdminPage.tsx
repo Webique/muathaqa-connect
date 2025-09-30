@@ -193,9 +193,10 @@ const AdminPage: React.FC = () => {
 
     try {
       // Use the actual blob URLs for images and videos
+      // For now, use placeholder images since blob URLs don't persist
       const uploadedImageUrls = uploadedFiles
         .filter(item => item.type === 'image')
-        .map(item => item.url); // Use the blob URL instead of fake path
+        .map((item, index) => `https://picsum.photos/400/300?random=${Date.now() + index}`);
       
       const uploadedVideoUrls = uploadedFiles
         .filter(item => item.type === 'video')

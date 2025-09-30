@@ -341,7 +341,7 @@ const Cities = () => {
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={property.images && property.images.length > 0 ? 
-    (property.images[0].startsWith('blob:') ? property.images[0] : property.images[0]) : 
+    property.images[0] : 
     '/src/assets/hero-real-estate.jpg'}
                     alt={isRTL ? property.title.ar : property.title.en}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -420,6 +420,33 @@ const Cities = () => {
                         </div>
                       </div>
                     )}
+                  </div>
+                  
+                  {/* Advertiser Details */}
+                  <div className="pt-4 border-t border-border">
+                    <div className="text-xs text-muted-foreground mb-2">
+                      {isRTL ? 'تفاصيل المعلن' : 'Advertiser Details'}
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {isRTL ? 'كود العقار' : 'Property Code'}
+                        </span>
+                        <span className="font-medium">{property.propertyCode}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {isRTL ? 'رقم المعلن' : 'Advertiser Number'}
+                        </span>
+                        <span className="font-medium">{property.advertiser.number}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {isRTL ? 'رخصة فال' : 'License Number'}
+                        </span>
+                        <span className="font-medium">{property.advertiser.license}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Link>
