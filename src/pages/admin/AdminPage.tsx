@@ -114,7 +114,7 @@ const AdminPage: React.FC = () => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    const newFiles: {file: File, url: string, type: 'image' | 'video'}[] = [];
+    const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string}[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -135,10 +135,21 @@ const AdminPage: React.FC = () => {
 
         const fileUrl = URL.createObjectURL(file);
         
+        // Convert image to base64 for storage
+        let base64 = '';
+        if (isImage) {
+          base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          });
+        }
+        
         newFiles.push({
           file: file,
           url: fileUrl,
-          type: isImage ? 'image' : 'video'
+          type: isImage ? 'image' : 'video',
+          base64: base64
         });
       }
 
@@ -193,10 +204,10 @@ const AdminPage: React.FC = () => {
 
     try {
       // Use the actual blob URLs for images and videos
-      // For now, use placeholder images since blob URLs don't persist
+      // Use base64 images for storage
       const uploadedImageUrls = uploadedFiles
-        .filter(item => item.type === 'image')
-        .map((item, index) => `https://picsum.photos/400/300?random=${Date.now() + index}`);
+        .filter(item => item.type === 'image' && item.base64)
+        .map(item => item.base64);
       
       const uploadedVideoUrls = uploadedFiles
         .filter(item => item.type === 'video')

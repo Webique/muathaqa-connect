@@ -15,9 +15,9 @@ const propertySchema = new mongoose.Schema({
     unique: true,
     uppercase: true 
   },
-  images: [{ type: String }],
+  images: [{ type: String }], // Base64 encoded images
   video: { type: String },
-  description: { type: String },
+  description: { type: String }, // Property description
   price: { 
     type: Number, 
     required: true,
