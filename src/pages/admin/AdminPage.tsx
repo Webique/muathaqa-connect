@@ -135,13 +135,43 @@ const AdminPage: React.FC = () => {
 
         const fileUrl = URL.createObjectURL(file);
         
-        // Convert image to base64 for storage
+        // Convert image to base64 for storage with compression
         let base64 = '';
         if (isImage) {
           base64 = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = () => {
+              // Calculate new dimensions (max 800px width, maintain aspect ratio)
+              const maxWidth = 800;
+              const maxHeight = 600;
+              let { width, height } = img;
+              
+              if (width > maxWidth) {
+                height = (height * maxWidth) / width;
+                width = maxWidth;
+              }
+              
+              if (height > maxHeight) {
+                width = (width * maxHeight) / height;
+                height = maxHeight;
+              }
+              
+              // Set canvas dimensions
+              canvas.width = width;
+              canvas.height = height;
+              
+              // Draw and compress image
+              ctx.drawImage(img, 0, 0, width, height);
+              
+              // Convert to base64 with compression (0.7 quality)
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+              resolve(compressedDataUrl);
+            };
+            
+            img.src = URL.createObjectURL(file);
           });
         }
         
