@@ -345,18 +345,20 @@ const AdminPage: React.FC = () => {
     
     // Convert existing images to uploadedFiles format
     const existingFiles = property.images.map((imageUrl, index) => ({
-      url: imageUrl, // This will be the base64 string or URL
+      url: imageUrl.replace('/src/assets/', '/assets/'), // Fix path and use as URL
       type: 'image' as const,
       base64: imageUrl, // Store the base64 string
-      isExisting: true // Mark as existing image
+      isExisting: true, // Mark as existing image
+      file: { name: `existing-image-${index + 1}.jpg` } // Add dummy file object for display
     }));
     
     // Add existing video if it exists
     if (property.video) {
       existingFiles.push({
-        url: property.video,
+        url: property.video.replace('/src/assets/', '/assets/'),
         type: 'video' as const,
-        isExisting: true
+        isExisting: true,
+        file: { name: 'existing-video.mp4' } // Add dummy file object for display
       });
     }
     
@@ -1109,11 +1111,13 @@ const AdminPage: React.FC = () => {
                             >
                               <X className="w-3 h-3" />
                             </Button>
-                            <div className="absolute bottom-1 left-1 right-1">
-                              <p className="text-xs text-white bg-black bg-opacity-50 px-1 py-0.5 rounded truncate">
-                                {fileItem.file.name}
-                              </p>
-                            </div>
+                            {fileItem.file?.name && (
+                              <div className="absolute bottom-1 left-1 right-1">
+                                <p className="text-xs text-white bg-black bg-opacity-50 px-1 py-0.5 rounded truncate">
+                                  {fileItem.file.name}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
