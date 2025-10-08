@@ -39,8 +39,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' })); // Increased limit for base64 images
 
-// MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://webiqueuser:webiquepassword@cluster0.d6rpmuc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB connection - using 'muathaqa' database
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://webiqueuser:webiquepassword@cluster0.d6rpmuc.mongodb.net/muathaqa?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGODB_URI)
 .then(() => {
