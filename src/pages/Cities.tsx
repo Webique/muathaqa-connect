@@ -436,7 +436,7 @@ const Cities = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
-                          {isRTL ? 'رقم المعلن' : 'Advertiser Number'}
+                          {isRTL ? 'رخصة الإعلان' : 'Advertisement License'}
                         </span>
                         <span className="font-medium">{property.advertiser.number}</span>
                       </div>

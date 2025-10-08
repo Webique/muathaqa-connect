@@ -663,7 +663,7 @@ const AdminPage: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="advertiserNumber">رقم المعلن / Advertiser Number</Label>
+                        <Label htmlFor="advertiserNumber">رخصة الإعلان</Label>
                         <Input
                           id="advertiserNumber"
                           value={formData.advertiserNumber}
