@@ -220,14 +220,14 @@ export const properties = [
     },
     propertyCode: 'MU-001',
     images: [
-      '/src/assets/hero-real-estate.jpg',
-      '/src/assets/city-dammam.jpg',
-      '/src/assets/city-dhahran.jpg',
-      '/src/assets/city-jubail.jpg',
-      '/src/assets/city-khobar.jpg',
-      '/src/assets/hero-real-estate.jpg'
+      '/assets/hero-real-estate.jpg',
+      '/assets/city-dammam.jpg',
+      '/assets/city-dhahran.jpg',
+      '/assets/city-jubail.jpg',
+      '/assets/city-khobar.jpg',
+      '/assets/hero-real-estate.jpg'
     ],
-    video: '/src/assets/property-video.mp4',
+    video: '/assets/property-video.mp4',
     price: 8000000,
     area: 600,
     bedrooms: 6,
@@ -266,9 +266,9 @@ export const properties = [
     },
     propertyCode: 'MU-002',
     images: [
-      '/src/assets/city-khobar.jpg',
-      '/src/assets/city-khobar.jpg',
-      '/src/assets/city-khobar.jpg'
+      '/assets/city-khobar.jpg',
+      '/assets/city-khobar.jpg',
+      '/assets/city-khobar.jpg'
     ],
     price: 2500000,
     area: 180,
@@ -308,8 +308,8 @@ export const properties = [
     },
     propertyCode: 'MU-003',
     images: [
-      '/src/assets/city-dammam.jpg',
-      '/src/assets/city-dammam.jpg'
+      '/assets/city-dammam.jpg',
+      '/assets/city-dammam.jpg'
     ],
     price: 1200000,
     area: 800,

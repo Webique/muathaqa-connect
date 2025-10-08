@@ -239,7 +239,7 @@ const AdminPage: React.FC = () => {
       
       // Ensure we have at least one image
       if (allImages.length === 0) {
-        allImages.push('/src/assets/hero-real-estate.jpg');
+        allImages.push('/assets/hero-real-estate.jpg');
       }
 
       const buildFeatures = () => {

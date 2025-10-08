@@ -341,8 +341,8 @@ const Cities = () => {
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={property.images && property.images.length > 0 ? 
-    property.images[0] : 
-    '/src/assets/hero-real-estate.jpg'}
+    property.images[0].replace('/src/assets/', '/assets/') : 
+    '/assets/hero-real-estate.jpg'}
                     alt={isRTL ? property.title.ar : property.title.en}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />

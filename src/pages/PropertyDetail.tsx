@@ -196,7 +196,7 @@ const PropertyDetail = () => {
                 <div className="aspect-video bg-muted rounded-lg overflow-hidden">
                   {property.images && property.images.length > 0 ? (
                     <img
-                      src={property.images[currentImageIndex]}
+                      src={property.images[currentImageIndex].replace('/src/assets/', '/assets/')}
                       alt={isRTL ? property.title.ar : property.title.en}
                       className="w-full h-full object-cover"
                     />
@@ -233,7 +233,7 @@ const PropertyDetail = () => {
                     variant="outline"
                     size="icon"
                     className="absolute bottom-4 right-4"
-                    onClick={() => window.open(property.video, '_blank')}
+                    onClick={() => window.open(property.video.replace('/src/assets/', '/assets/'), '_blank')}
                   >
                     <Play className="h-4 w-4" />
                   </Button>
@@ -252,7 +252,7 @@ const PropertyDetail = () => {
                       onClick={() => setCurrentImageIndex(index)}
                     >
                       <img
-                        src={image}
+                        src={image.replace('/src/assets/', '/assets/')}
                         alt={`${isRTL ? property.title.ar : property.title.en} ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
