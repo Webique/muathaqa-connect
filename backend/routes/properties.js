@@ -106,11 +106,23 @@ router.get('/:id', async (req, res) => {
 // POST /api/properties - Create new property
 router.post('/', async (req, res) => {
   try {
-    // Generate property code if not provided
-    if (!req.body.propertyCode) {
-      const count = await Property.countDocuments();
-      req.body.propertyCode = `MU-${String(count + 1).padStart(3, '0')}`;
+    // Generate sequential property code automatically
+    // Find the last property code to get the next number
+    const lastProperty = await Property.findOne()
+      .sort({ propertyCode: -1 })
+      .select('propertyCode');
+    
+    let nextNumber = 1;
+    if (lastProperty && lastProperty.propertyCode) {
+      // Extract number from code like "MU-0001"
+      const match = lastProperty.propertyCode.match(/MU-(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1]) + 1;
+      }
     }
+    
+    // Generate code with 4 digits (MU-0001, MU-0002, etc.)
+    req.body.propertyCode = `MU-${String(nextNumber).padStart(4, '0')}`;
 
     const property = new Property(req.body);
     await property.save();
@@ -140,6 +152,9 @@ router.post('/', async (req, res) => {
 // PUT /api/properties/:id - Update property
 router.put('/:id', async (req, res) => {
   try {
+    // Prevent propertyCode from being updated
+    delete req.body.propertyCode;
+    
     const property = await Property.findByIdAndUpdate(
       req.params.id,
       req.body,
