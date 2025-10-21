@@ -24,6 +24,7 @@ const PropertyDetail = () => {
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -190,11 +191,20 @@ const PropertyDetail = () => {
               </h1>
             </div>
 
-            {/* Image Gallery */}
+            {/* Image Gallery / Video Player */}
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="relative">
                 <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                  {property.images && property.images.length > 0 ? (
+                  {showVideo && property.video ? (
+                    <video 
+                      controls 
+                      className="w-full h-full"
+                      autoPlay
+                    >
+                      <source src={property.video} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : property.images && property.images.length > 0 ? (
                     <img
                       src={property.images[currentImageIndex].replace('/src/assets/', '/assets/')}
                       alt={isRTL ? property.title.ar : property.title.en}
@@ -207,7 +217,7 @@ const PropertyDetail = () => {
                   )}
                 </div>
                 
-                {property.images && property.images.length > 1 && (
+                {!showVideo && property.images && property.images.length > 1 && (
                   <>
                     <Button
                       variant="outline"
@@ -231,11 +241,12 @@ const PropertyDetail = () => {
                 {property.video && (
                   <Button
                     variant="outline"
-                    size="icon"
-                    className="absolute bottom-4 right-4"
-                    onClick={() => window.open(property.video.replace('/src/assets/', '/assets/'), '_blank')}
+                    size="default"
+                    className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm"
+                    onClick={() => setShowVideo(!showVideo)}
                   >
-                    <Play className="h-4 w-4" />
+                    <Play className="h-4 w-4 mr-2" />
+                    {showVideo ? (isRTL ? 'عرض الصور' : 'Show Images') : (isRTL ? 'عرض الفيديو' : 'Watch Video')}
                   </Button>
                 )}
               </div>

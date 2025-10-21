@@ -1,10 +1,11 @@
+/* Import fonts first - must come before @tailwind directives */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Muathaqa Real Estate Design System - Premium Beige & Teal Theme */
-
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap');
 
 @layer base {
   :root {

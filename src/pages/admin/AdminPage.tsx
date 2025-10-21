@@ -9,14 +9,21 @@ import { Badge } from '@/components/ui/badge';
 import { Trash2, Plus, Edit, X, Upload, Image, Video, File } from 'lucide-react';
 import { apiService, Property } from '@/services/api';
 import { toast } from 'sonner';
+import { uploadToCloudinary, validateVideoFile, getVideoThumbnail } from '@/lib/cloudinary';
+
+// Cloudinary credentials - CONFIGURED AND READY TO USE!
+const CLOUDINARY_CLOUD_NAME = 'dral2ddhm';
+const CLOUDINARY_API_KEY = '671474332779551';
+const CLOUDINARY_API_SECRET = 'hP5JDgRwFyD-rpHqGcgw-qGCwco';
 
 const AdminPage: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<{file?: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean}[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{file?: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean, cloudinaryUrl?: string}[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
   const [formData, setFormData] = useState({
     // Basic Information
     titleEn: '',
@@ -116,7 +123,7 @@ const AdminPage: React.FC = () => {
     if (!files || files.length === 0) return;
     
     setUploading(true);
-    const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean}[] = [];
+    const newFiles: {file: File, url: string, type: 'image' | 'video', base64?: string, isExisting?: boolean, cloudinaryUrl?: string}[] = [];
     
     try {
       for (let i = 0; i < files.length; i++) {
@@ -131,17 +138,32 @@ const AdminPage: React.FC = () => {
           continue;
         }
 
-        if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+        // Different size limits for images vs videos
+        const maxSize = isImage ? 10 * 1024 * 1024 : 100 * 1024 * 1024; // 10MB for images, 100MB for videos
+        if (file.size > maxSize) {
+          const maxSizeMB = isImage ? 10 : 100;
+          toast.error(`${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
           continue;
+        }
+
+        // Validate video duration (5 minutes max)
+        if (isVideo) {
+          try {
+            await validateVideoFile(file, 5, 100);
+          } catch (error) {
+            toast.error(`${file.name}: ${error}`);
+            continue;
+          }
         }
 
         const fileUrl = URL.createObjectURL(file);
         console.log('Created file URL:', fileUrl);
         
-        // Convert image to base64 for storage (simplified)
         let base64 = '';
+        let cloudinaryUrl = '';
+
         if (isImage) {
+          // For images: convert to base64 for storage
           console.log('Converting image to base64...');
           base64 = await new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -155,18 +177,40 @@ const AdminPage: React.FC = () => {
             };
             reader.readAsDataURL(file);
           });
+        } else if (isVideo) {
+          // For videos: upload to Cloudinary
+          console.log('Uploading video to Cloudinary...');
+          toast.info(`Uploading ${file.name} to Cloudinary...`);
+          
+          try {
+            const uploadResult = await uploadToCloudinary(
+              file,
+              CLOUDINARY_CLOUD_NAME,
+              CLOUDINARY_API_KEY,
+              CLOUDINARY_API_SECRET,
+              'muathaqa' // folder name
+            );
+            cloudinaryUrl = uploadResult.secure_url;
+            console.log('Video uploaded to Cloudinary:', cloudinaryUrl);
+            toast.success(`${file.name} uploaded successfully!`);
+          } catch (error) {
+            console.error('Cloudinary upload failed:', error);
+            toast.error(`Failed to upload ${file.name} to Cloudinary: ${error.message}`);
+            continue;
+          }
         }
         
         newFiles.push({
           file: file,
           url: fileUrl,
           type: isImage ? 'image' : 'video',
-          base64: base64
+          base64: base64,
+          cloudinaryUrl: cloudinaryUrl
         });
       }
 
       setUploadedFiles(prev => [...prev, ...newFiles]);
-      toast.success(`${newFiles.length} file(s) uploaded successfully!`);
+      toast.success(`${newFiles.length} file(s) processed successfully!`);
     } catch (error) {
       console.error('Upload error details:', error);
       toast.error(`Failed to upload files: ${error.message || 'Unknown error'}`);
@@ -227,11 +271,11 @@ const AdminPage: React.FC = () => {
       
       const existingVideos = uploadedFiles
         .filter(item => item.type === 'video' && item.isExisting)
-        .map(item => item.url);
+        .map(item => item.cloudinaryUrl || item.url);
       
       const newVideos = uploadedFiles
-        .filter(item => item.type === 'video' && !item.isExisting)
-        .map(item => item.url);
+        .filter(item => item.type === 'video' && !item.isExisting && item.cloudinaryUrl)
+        .map(item => item.cloudinaryUrl!);
       
       // Combine existing and new images/videos
       const allImages = [...existingImages, ...newImages];
@@ -358,6 +402,7 @@ const AdminPage: React.FC = () => {
         url: property.video.replace('/src/assets/', '/assets/'),
         type: 'video' as const,
         isExisting: true,
+        cloudinaryUrl: property.video, // Store the Cloudinary URL
         file: { name: 'existing-video.mp4' } // Add dummy file object for display
       });
     }
@@ -1064,7 +1109,10 @@ const AdminPage: React.FC = () => {
                           Supports: JPG, PNG, GIF, MP4, MOV, AVI
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
-                          Maximum file size: 10MB per file
+                          Images: 10MB max | Videos: 100MB max, up to 5 minutes
+                        </p>
+                        <p className="text-xs text-teal-600 mt-1 font-medium">
+                          ✅ Videos upload automatically to Cloudinary CDN
                         </p>
                       </div>
                     </label>
