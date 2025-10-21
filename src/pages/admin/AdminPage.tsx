@@ -646,8 +646,11 @@ const AdminPage: React.FC = () => {
                         id="locationEn"
                         value={formData.locationEn}
                         onChange={(e) => handleInputChange('locationEn', e.target.value)}
-                        placeholder="e.g., Riyadh, Saudi Arabia"
+                        placeholder="e.g., Riyadh, Saudi Arabia OR paste Google Maps link"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        💡 Tip: Paste a Google Maps link or type the location manually
+                      </p>
                     </div>
                     <div>
                       <Label htmlFor="locationAr">Location (Arabic)</Label>
@@ -655,8 +658,11 @@ const AdminPage: React.FC = () => {
                         id="locationAr"
                         value={formData.locationAr}
                         onChange={(e) => handleInputChange('locationAr', e.target.value)}
-                        placeholder="مثال: الرياض، المملكة العربية السعودية"
+                        placeholder="مثال: الرياض، المملكة العربية السعودية أو رابط خرائط جوجل"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        💡 نصيحة: الصق رابط خرائط جوجل أو اكتب الموقع يدوياً
+                      </p>
                     </div>
                     <div>
                       <Label htmlFor="type">Property Type *</Label>

@@ -157,8 +157,23 @@ const PropertyDetail = () => {
   };
 
   const openGoogleMaps = () => {
-    const address = encodeURIComponent(isRTL ? property.location.ar : property.location.en);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+    const locationText = isRTL ? property.location.ar : property.location.en;
+    
+    // Check if the location is already a URL (Google Maps link or any other URL)
+    const isUrl = locationText.startsWith('http://') || 
+                  locationText.startsWith('https://') || 
+                  locationText.includes('maps.google.') || 
+                  locationText.includes('goo.gl/maps') ||
+                  locationText.includes('maps.app.goo.gl');
+    
+    if (isUrl) {
+      // If it's already a URL, open it directly
+      window.open(locationText, '_blank');
+    } else {
+      // If it's regular text, search for it on Google Maps
+      const address = encodeURIComponent(locationText);
+      window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
+    }
   };
 
   const nextImage = () => {
