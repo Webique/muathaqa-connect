@@ -107,18 +107,21 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     // Generate sequential property code automatically
-    // Find the last property code to get the next number
-    const lastProperty = await Property.findOne()
-      .sort({ propertyCode: -1 })
-      .select('propertyCode');
+    // Find all properties with new format codes (MU-XXXX with 4 digits only)
+    const allProperties = await Property.find({
+      propertyCode: /^MU-\d{4}$/  // Match only MU-0001, MU-0002, etc. (exactly 4 digits)
+    }).select('propertyCode');
     
     let nextNumber = 1;
-    if (lastProperty && lastProperty.propertyCode) {
-      // Extract number from code like "MU-0001"
-      const match = lastProperty.propertyCode.match(/MU-(\d+)/);
-      if (match) {
-        nextNumber = parseInt(match[1]) + 1;
-      }
+    
+    if (allProperties.length > 0) {
+      // Find the highest number from existing new-format codes
+      const numbers = allProperties.map(p => {
+        const match = p.propertyCode.match(/^MU-(\d{4})$/);
+        return match ? parseInt(match[1]) : 0;
+      });
+      const maxNumber = Math.max(...numbers);
+      nextNumber = maxNumber + 1;
     }
     
     // Generate code with 4 digits (MU-0001, MU-0002, etc.)
