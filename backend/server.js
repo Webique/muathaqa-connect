@@ -17,6 +17,11 @@ const corsOptions = {
       return callback(null, true);
     }
     
+    // Allow production domain
+    if (origin.includes('muathaga.com')) {
+      return callback(null, true);
+    }
+    
     // Allow Netlify domains
     if (origin.includes('netlify.app')) {
       return callback(null, true);
