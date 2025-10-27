@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   MapPin, 
@@ -187,29 +187,25 @@ const PropertyDetail = () => {
     setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
-  // Lightbox functions with useCallback to prevent re-renders
-  const openLightbox = useCallback((index: number) => {
+  // Lightbox functions
+  const openLightbox = (index: number) => {
     setLightboxIndex(index);
     setLightboxOpen(true);
-  }, []);
+  };
 
-  const closeLightbox = useCallback(() => {
+  const closeLightbox = () => {
     setLightboxOpen(false);
-  }, []);
+  };
 
-  const nextLightbox = useCallback(() => {
-    setLightboxIndex((prev) => {
-      if (!property?.images) return 0;
-      return (prev + 1) % property.images.length;
-    });
-  }, [property?.images]);
+  const nextLightbox = () => {
+    if (!property?.images) return;
+    setLightboxIndex((prev) => (prev + 1) % property.images.length);
+  };
 
-  const prevLightbox = useCallback(() => {
-    setLightboxIndex((prev) => {
-      if (!property?.images) return 0;
-      return (prev - 1 + property.images.length) % property.images.length;
-    });
-  }, [property?.images]);
+  const prevLightbox = () => {
+    if (!property?.images) return;
+    setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -217,17 +213,19 @@ const PropertyDetail = () => {
 
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        closeLightbox();
+        setLightboxOpen(false);
       } else if (e.key === 'ArrowLeft') {
-        prevLightbox();
+        if (!property?.images) return;
+        setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
       } else if (e.key === 'ArrowRight') {
-        nextLightbox();
+        if (!property?.images) return;
+        setLightboxIndex((prev) => (prev + 1) % property.images.length);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [lightboxOpen, prevLightbox, nextLightbox, closeLightbox]);
+  }, [lightboxOpen, property?.images]);
 
   return (
     <div className="min-h-screen bg-background">
