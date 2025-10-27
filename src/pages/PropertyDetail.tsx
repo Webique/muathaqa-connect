@@ -25,6 +25,8 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showVideo, setShowVideo] = useState(false);
+  const [fullscreenOpen, setFullscreenOpen] = useState(false);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -210,7 +212,13 @@ const PropertyDetail = () => {
             {/* Image Gallery / Video Player */}
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="relative">
-                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                <div 
+                  className="aspect-video bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => {
+                    setFullscreenIndex(currentImageIndex);
+                    setFullscreenOpen(true);
+                  }}
+                >
                   {showVideo && property.video ? (
                     <video 
                       controls 
@@ -273,10 +281,14 @@ const PropertyDetail = () => {
                   {property.images.slice(0, 4).map((image: string, index: number) => (
                     <button
                       key={index}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer hover:opacity-80 ${
                         index === currentImageIndex ? 'border-primary' : 'border-border'
                       }`}
-                      onClick={() => setCurrentImageIndex(index)}
+                      onClick={() => {
+                        setCurrentImageIndex(index);
+                        setFullscreenIndex(index);
+                        setFullscreenOpen(true);
+                      }}
                     >
                       <img
                         src={image.replace('/src/assets/', '/assets/')}
@@ -289,6 +301,56 @@ const PropertyDetail = () => {
               )}
             </div>
 
+            {/* Fullscreen Modal */}
+            {fullscreenOpen && property.images && (
+              <div 
+                className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+                onClick={() => setFullscreenOpen(false)}
+              >
+                <button
+                  onClick={() => setFullscreenOpen(false)}
+                  className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10 bg-black/50 rounded-full p-2"
+                >
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div 
+                  className="relative max-w-7xl w-full h-full flex items-center justify-center p-4"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {property.images[fullscreenIndex] && (
+                    <img
+                      src={property.images[fullscreenIndex].replace('/src/assets/', '/assets/')}
+                      alt={`${isRTL ? property.title.ar : property.title.en}`}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  )}
+                  
+                  {property.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setFullscreenIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-colors"
+                      >
+                        <ChevronLeft className="h-8 w-8" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setFullscreenIndex((prev) => (prev + 1) % property.images.length);
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-colors"
+                      >
+                        <ChevronRight className="h-8 w-8" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Basic Data Section - Dynamic based on property type */}
             <div className="bg-card border border-border rounded-2xl p-6">
