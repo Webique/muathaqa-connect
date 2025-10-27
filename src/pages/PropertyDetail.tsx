@@ -436,7 +436,10 @@ const PropertyDetail = () => {
               <h2 className="text-2xl font-bold text-foreground mb-6">
                 {isRTL ? 'الوصف' : 'Description'}
               </h2>
-              <div className="text-muted-foreground leading-relaxed">
+              <div 
+                className="text-muted-foreground leading-relaxed whitespace-pre-wrap break-words"
+                style={{ whiteSpace: 'pre-wrap' }}
+              >
                 {property.description || (isRTL ? 'لا يوجد وصف متاح' : 'No description available')}
               </div>
             </div>
