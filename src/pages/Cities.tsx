@@ -360,25 +360,22 @@ const Cities = () => {
 
                 {/* Property Details */}
                 <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                        {isRTL ? property.title.ar : property.title.en}
-                      </h3>
-                      <div className="flex items-center text-muted-foreground">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span className="text-sm">
-                          {isRTL ? property.location.ar : property.location.en}
-                        </span>
-                      </div>
+                  {/* Price Section - Full Width on Mobile */}
+                  <div className="mb-4 pb-4 border-b border-border">
+                    <div className="text-2xl md:text-3xl font-bold text-primary mb-1 break-words">
+                      {formatPrice(property.price)} {t('cities.currency')}
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-primary">
-                        {formatPrice(property.price)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {t('cities.currency')}
-                      </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <h3 className="text-lg md:text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {isRTL ? property.title.ar : property.title.en}
+                    </h3>
+                    <div className="flex items-center text-muted-foreground">
+                      <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="text-sm truncate">
+                        {isRTL ? property.location.ar : property.location.en}
+                      </span>
                     </div>
                   </div>
 
@@ -423,28 +420,28 @@ const Cities = () => {
                   </div>
                   
                   {/* Advertiser Details */}
-                  <div className="pt-4 border-t border-border">
+                  <div className="mt-4 pt-4 border-t border-border">
                     <div className="text-xs text-muted-foreground mb-2">
                       {isRTL ? 'تفاصيل المعلن' : 'Advertiser Details'}
                     </div>
                     <div className="grid grid-cols-1 gap-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-muted-foreground flex-shrink-0">
                           {isRTL ? 'كود العقار' : 'Property Code'}
                         </span>
-                        <span className="font-medium">{property.propertyCode}</span>
+                        <span className="font-medium text-right break-all">{property.propertyCode}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-muted-foreground flex-shrink-0">
                           {isRTL ? 'رخصة الإعلان' : 'Advertisement License'}
                         </span>
-                        <span className="font-medium">{property.advertiser.number}</span>
+                        <span className="font-medium text-right break-all">{property.advertiser.number}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-muted-foreground flex-shrink-0">
                           {isRTL ? 'رخصة فال' : 'License Number'}
                         </span>
-                        <span className="font-medium">{property.advertiser.license}</span>
+                        <span className="font-medium text-right break-all">{property.advertiser.license}</span>
                       </div>
                     </div>
                   </div>
