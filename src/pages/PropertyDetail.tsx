@@ -279,28 +279,37 @@ const PropertyDetail = () => {
                 )}
               </div>
 
-              {/* Image Thumbnails */}
-              {property.images && property.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2 mt-4">
-                  {property.images.slice(0, 4).map((image: string, index: number) => (
-                    <button
-                      key={index}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer hover:opacity-80 ${
-                        index === currentImageIndex ? 'border-primary' : 'border-border'
-                      }`}
-                      onClick={() => {
-                        setCurrentImageIndex(index);
-                        setFullscreenIndex(index);
-                        setFullscreenOpen(true);
-                      }}
-                    >
-                      <img
-                        src={image.replace('/src/assets/', '/assets/')}
-                        alt={`${isRTL ? property.title.ar : property.title.en} ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+              {/* All Images Grid */}
+              {property.images && property.images.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold mb-3">
+                    {isRTL ? 'جميع الصور' : 'All Images'} ({property.images.length})
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {property.images.map((image: string, index: number) => (
+                      <button
+                        key={index}
+                        className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer hover:opacity-80 ${
+                          index === currentImageIndex ? 'border-primary ring-2 ring-primary/50' : 'border-border'
+                        }`}
+                        onClick={() => {
+                          setCurrentImageIndex(index);
+                          setFullscreenIndex(index);
+                          setFullscreenOpen(true);
+                        }}
+                      >
+                        <img
+                          src={image.replace('/src/assets/', '/assets/')}
+                          alt={`${isRTL ? property.title.ar : property.title.en} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Image number overlay */}
+                        <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
