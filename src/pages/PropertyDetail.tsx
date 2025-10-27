@@ -207,25 +207,26 @@ const PropertyDetail = () => {
     setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
-  // Keyboard navigation
+  // Keyboard navigation - simplified
   useEffect(() => {
-    if (!lightboxOpen) return;
+    if (!lightboxOpen || !property?.images) return;
 
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setLightboxOpen(false);
       } else if (e.key === 'ArrowLeft') {
-        if (!property?.images) return;
-        setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+        const length = property.images.length;
+        setLightboxIndex((prev) => (prev - 1 + length) % length);
       } else if (e.key === 'ArrowRight') {
-        if (!property?.images) return;
-        setLightboxIndex((prev) => (prev + 1) % property.images.length);
+        const length = property.images.length;
+        setLightboxIndex((prev) => (prev + 1) % length);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [lightboxOpen, property?.images]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxOpen]);
 
   return (
     <div className="min-h-screen bg-background">
