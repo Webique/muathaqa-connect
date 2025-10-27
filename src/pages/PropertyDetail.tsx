@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   MapPin, 
@@ -187,23 +187,29 @@ const PropertyDetail = () => {
     setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
-  // Lightbox functions
-  const openLightbox = (index: number) => {
+  // Lightbox functions with useCallback to prevent re-renders
+  const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
     setLightboxOpen(true);
-  };
+  }, []);
 
-  const closeLightbox = () => {
+  const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
-  };
+  }, []);
 
-  const nextLightbox = () => {
-    setLightboxIndex((prev) => (prev + 1) % property.images.length);
-  };
+  const nextLightbox = useCallback(() => {
+    setLightboxIndex((prev) => {
+      if (!property?.images) return 0;
+      return (prev + 1) % property.images.length;
+    });
+  }, [property?.images]);
 
-  const prevLightbox = () => {
-    setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
-  };
+  const prevLightbox = useCallback(() => {
+    setLightboxIndex((prev) => {
+      if (!property?.images) return 0;
+      return (prev - 1 + property.images.length) % property.images.length;
+    });
+  }, [property?.images]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -221,7 +227,7 @@ const PropertyDetail = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [lightboxOpen]);
+  }, [lightboxOpen, prevLightbox, nextLightbox, closeLightbox]);
 
   return (
     <div className="min-h-screen bg-background">
