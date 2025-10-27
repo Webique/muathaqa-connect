@@ -11,7 +11,8 @@ import {
   Phone,
   Mail,
   ArrowLeft,
-  Play
+  Play,
+  X
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { apiService } from '@/services/api';
@@ -25,6 +26,8 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showVideo, setShowVideo] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -184,6 +187,42 @@ const PropertyDetail = () => {
     setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
+  // Lightbox functions
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const nextLightbox = () => {
+    setLightboxIndex((prev) => (prev + 1) % property.images.length);
+  };
+
+  const prevLightbox = () => {
+    setLightboxIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        prevLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextLightbox();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [lightboxOpen]);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -209,7 +248,10 @@ const PropertyDetail = () => {
             {/* Image Gallery / Video Player */}
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="relative">
-                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                <div 
+                  className="aspect-video bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => property.images && property.images.length > 0 && openLightbox(currentImageIndex)}
+                >
                   {showVideo && property.video ? (
                     <video 
                       controls 
@@ -272,10 +314,13 @@ const PropertyDetail = () => {
                   {property.images.slice(0, 4).map((image: string, index: number) => (
                     <button
                       key={index}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer hover:opacity-80 ${
                         index === currentImageIndex ? 'border-primary' : 'border-border'
                       }`}
-                      onClick={() => setCurrentImageIndex(index)}
+                      onClick={() => {
+                        setCurrentImageIndex(index);
+                        openLightbox(index);
+                      }}
                     >
                       <img
                         src={image.replace('/src/assets/', '/assets/')}
@@ -287,6 +332,62 @@ const PropertyDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* Lightbox Modal */}
+            {lightboxOpen && property.images && (
+              <div 
+                className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+                onClick={closeLightbox}
+              >
+                {/* Close Button */}
+                <button
+                  onClick={closeLightbox}
+                  className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+                >
+                  <X className="h-8 w-8" />
+                </button>
+
+                {/* Main Image */}
+                <div className="relative max-w-7xl w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                  {property.images.length > 0 && (
+                    <img
+                      src={property.images[lightboxIndex].replace('/src/assets/', '/assets/')}
+                      alt={`${isRTL ? property.title.ar : property.title.en} - Image ${lightboxIndex + 1}`}
+                      className="max-w-full max-h-full object-contain rounded-lg"
+                    />
+                  )}
+                  
+                  {/* Navigation Buttons */}
+                  {property.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          prevLightbox();
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-3 rounded-full transition-colors"
+                      >
+                        <ChevronLeft className="h-8 w-8" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          nextLightbox();
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-3 rounded-full transition-colors"
+                      >
+                        <ChevronRight className="h-8 w-8" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Image Counter */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+                    {lightboxIndex + 1} / {property.images.length}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Basic Data Section - Dynamic based on property type */}
             <div className="bg-card border border-border rounded-2xl p-6">
