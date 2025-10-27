@@ -269,17 +269,23 @@ const AdminPage: React.FC = () => {
         .filter(item => item.type === 'image' && !item.isExisting && item.base64)
         .map(item => item.base64);
       
-      const existingVideos = uploadedFiles
-        .filter(item => item.type === 'video' && item.isExisting)
-        .map(item => item.cloudinaryUrl || item.url);
+      // Find video (only allow ONE video)
+      let videoUrl: string | undefined = undefined;
       
-      const newVideos = uploadedFiles
-        .filter(item => item.type === 'video' && !item.isExisting && item.cloudinaryUrl)
-        .map(item => item.cloudinaryUrl!);
+      // Check for existing video
+      const existingVideo = uploadedFiles.find(item => item.type === 'video' && item.isExisting);
+      if (existingVideo) {
+        videoUrl = existingVideo.cloudinaryUrl || existingVideo.url;
+      }
       
-      // Combine existing and new images/videos
+      // Check for new video (only one video is allowed)
+      const newVideo = uploadedFiles.find(item => item.type === 'video' && !item.isExisting && item.cloudinaryUrl);
+      if (newVideo && newVideo.cloudinaryUrl) {
+        videoUrl = newVideo.cloudinaryUrl;
+      }
+      
+      // Combine existing and new images
       const allImages = [...existingImages, ...newImages];
-      const allVideos = [...existingVideos, ...newVideos];
       
       // Ensure we have at least one image
       if (allImages.length === 0) {
@@ -340,7 +346,7 @@ const AdminPage: React.FC = () => {
         purpose: formData.purpose || 'sale',
         usage: formData.type === 'land' || formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom' ? 'Commercial' : 'Residential',
         images: allImages,
-        video: allVideos.length > 0 ? allVideos[0] : undefined,
+        video: videoUrl,
         description: formData.description.trim() || undefined,
         services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
         advertiser: {
