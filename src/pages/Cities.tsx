@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Square, Filter, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,36 +28,9 @@ const Cities = () => {
     bathrooms: ''
   });
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    loadProperties();
-  }, []);
-
-  const loadProperties = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.getProperties();
-      if (response.success) {
-        setProperties(response.data);
-        setSearchResults(response.data);
-      } else {
-        console.error('Failed to load properties:', response.error);
-        setProperties([]);
-        setSearchResults([]);
-      }
-    } catch (error) {
-      console.error('Error loading properties:', error);
-      setProperties([]);
-      setSearchResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = () => {
-    setIsSearching(true);
-    
-    let filtered = [...properties];
+  // Function to apply filters to properties
+  const applyFilters = useCallback((propertiesList: any[]) => {
+    let filtered = [...propertiesList];
 
     // Apply filters
     if (filters.city) {
@@ -99,6 +72,46 @@ const Cities = () => {
       filtered = filtered.filter(property => property.bathrooms >= parseInt(filters.bathrooms));
     }
 
+    return filtered;
+  }, [filters]);
+
+  const loadProperties = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getProperties();
+      if (response.success) {
+        setProperties(response.data);
+        setSearchResults(response.data);
+      } else {
+        console.error('Failed to load properties:', response.error);
+        setProperties([]);
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setProperties([]);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    loadProperties();
+  }, []);
+
+  // Auto-apply filters when they change
+  useEffect(() => {
+    if (properties.length > 0) {
+      const filtered = applyFilters(properties);
+      setSearchResults(filtered);
+    }
+  }, [filters, properties, applyFilters]);
+
+  const handleSearch = () => {
+    setIsSearching(true);
+    const filtered = applyFilters(properties);
     setSearchResults(filtered);
     setIsSearching(false);
   };
@@ -115,7 +128,7 @@ const Cities = () => {
       bedrooms: '',
       bathrooms: ''
     });
-    setSearchResults(properties);
+    // Results will be updated automatically by useEffect
   };
 
   const formatPrice = (price: number) => {
@@ -207,19 +220,19 @@ const Cities = () => {
                     <SelectValue placeholder={t('filters.typePlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="villa">Villa</SelectItem>
-                    <SelectItem value="apartment_tower">Apartment in Tower</SelectItem>
-                    <SelectItem value="apartment_building">Apartment in Building</SelectItem>
-                    <SelectItem value="land">Land</SelectItem>
-                    <SelectItem value="building">Building</SelectItem>
-                    <SelectItem value="townhouse">Townhouse</SelectItem>
-                    <SelectItem value="mansion">Mansion</SelectItem>
-                    <SelectItem value="farm">Farm</SelectItem>
-                    <SelectItem value="istraha">Istraha</SelectItem>
-                    <SelectItem value="store">Store</SelectItem>
-                    <SelectItem value="office">Office</SelectItem>
-                    <SelectItem value="resort">Resort</SelectItem>
-                    <SelectItem value="showroom">Showroom</SelectItem>
+                    <SelectItem value="villa">{getBuildingTypeName('villa')}</SelectItem>
+                    <SelectItem value="apartment_tower">{getBuildingTypeName('apartment_tower')}</SelectItem>
+                    <SelectItem value="apartment_building">{getBuildingTypeName('apartment_building')}</SelectItem>
+                    <SelectItem value="land">{getBuildingTypeName('land')}</SelectItem>
+                    <SelectItem value="building">{getBuildingTypeName('building')}</SelectItem>
+                    <SelectItem value="townhouse">{getBuildingTypeName('townhouse')}</SelectItem>
+                    <SelectItem value="mansion">{getBuildingTypeName('mansion')}</SelectItem>
+                    <SelectItem value="farm">{getBuildingTypeName('farm')}</SelectItem>
+                    <SelectItem value="istraha">{getBuildingTypeName('istraha')}</SelectItem>
+                    <SelectItem value="store">{getBuildingTypeName('store')}</SelectItem>
+                    <SelectItem value="office">{getBuildingTypeName('office')}</SelectItem>
+                    <SelectItem value="resort">{getBuildingTypeName('resort')}</SelectItem>
+                    <SelectItem value="showroom">{getBuildingTypeName('showroom')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -233,9 +246,9 @@ const Cities = () => {
                     <SelectValue placeholder={t('filters.purposePlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sale">For Sale</SelectItem>
-                    <SelectItem value="rent">For Rent</SelectItem>
-                    <SelectItem value="investment">For Investment</SelectItem>
+                    <SelectItem value="sale">{getPurposeName('sale')}</SelectItem>
+                    <SelectItem value="rent">{getPurposeName('rent')}</SelectItem>
+                    <SelectItem value="investment">{getPurposeName('investment')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
