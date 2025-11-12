@@ -1,7 +1,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cities } from '@/data/propertyData';
 import { MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import khobarImage from '@/assets/city-khobar.jpg';
 import dammamImage from '@/assets/city-dammam.jpg';
 import dhahranImage from '@/assets/city-dhahran.jpg';
@@ -10,6 +10,7 @@ import ahsaImage from '@/assets/ahsa.jpg';
 
 const FeaturedCities = () => {
   const { t, isRTL } = useLanguage();
+  const navigate = useNavigate();
 
   const cityImages = {
     khobar: khobarImage,
@@ -56,6 +57,15 @@ const FeaturedCities = () => {
               key={city.key}
               className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-medium transition-all duration-500 hover:-translate-y-2 cursor-pointer"
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => navigate('/cities')}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  navigate('/cities');
+                }
+              }}
+              role="button"
+              tabIndex={0}
             >
               {/* City Image */}
               <div className="relative h-64 overflow-hidden">
@@ -101,12 +111,12 @@ const FeaturedCities = () => {
                       {city.districts.length}
                     </div>
                   </div>
-                  <Link to="/cities" className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
+                  <div className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
                     <span className={`text-sm font-medium ${isRTL ? 'font-arabic' : ''}`}>
                       {isRTL ? 'استكشف' : 'Explore'}
                     </span>
                     <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                  </div>
                 </div>
 
                 {/* Sample Districts */}
