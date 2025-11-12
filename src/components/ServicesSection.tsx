@@ -1,9 +1,29 @@
-import { TrendingUp, Handshake, Building, FileCheck, ArrowRight, ArrowLeft } from 'lucide-react';
+import {
+  TrendingUp,
+  Handshake,
+  Building,
+  FileCheck,
+  ArrowRight,
+  ArrowLeft,
+  Plus,
+  Minus,
+  RotateCcw,
+} from 'lucide-react';
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { services } from '@/data/propertyData';
+import pdfPreview from '@/assets/pdf.jpg';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const ServicesSection = () => {
   const { t, isRTL } = useLanguage();
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const serviceIcons = {
     marketing: TrendingUp,
@@ -65,16 +85,86 @@ const ServicesSection = () => {
                 </p>
 
                 {/* Learn More Link */}
-                <div className="flex items-center justify-center gap-2 text-primary group-hover:text-secondary transition-colors cursor-pointer">
+                <button
+                  type="button"
+                  className="group flex items-center justify-center gap-2 text-primary transition-colors hover:text-secondary"
+                  onClick={() => {
+                    setZoomLevel(1);
+                    setIsPdfOpen(true);
+                  }}
+                >
                   <span className={`text-sm font-medium ${isRTL ? 'font-arabic' : ''}`}>
                     {isRTL ? 'اعرف المزيد' : 'Learn More'}
                   </span>
                   <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </div>
+                </button>
               </div>
             );
           })}
         </div>
+        <Dialog
+          open={isPdfOpen}
+          onOpenChange={(isOpen) => {
+            setIsPdfOpen(isOpen);
+            if (!isOpen) {
+              setZoomLevel(1);
+            }
+          }}
+        >
+          <DialogContent className="w-full max-w-4xl">
+            <DialogHeader>
+              <DialogTitle className={isRTL ? 'font-arabic text-xl' : 'text-xl'}>
+                {isRTL ? 'ملف الخدمات' : 'Services Brochure'}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-4">
+              <div className="relative max-h-[70vh] overflow-auto rounded-xl bg-muted/40 p-4">
+                <img
+                  src={pdfPreview}
+                  alt={isRTL ? 'معاينة ملف الخدمات' : 'Services brochure preview'}
+                  className="mx-auto max-w-full select-none object-contain transition-transform duration-300 ease-out"
+                  style={{ transform: `scale(${zoomLevel})` }}
+                  draggable={false}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoomLevel((prev) => Math.max(0.5, parseFloat((prev - 0.25).toFixed(2))))
+                  }
+                  className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground disabled:pointer-events-none disabled:opacity-50"
+                  disabled={zoomLevel <= 0.5}
+                >
+                  <Minus className="h-4 w-4" />
+                  {isRTL ? 'تصغير' : 'Zoom Out'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel(1)}
+                  className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground disabled:pointer-events-none disabled:opacity-50"
+                  disabled={zoomLevel === 1}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  {isRTL ? 'إعادة' : 'Reset'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoomLevel((prev) => Math.min(3, parseFloat((prev + 0.25).toFixed(2))))
+                  }
+                  className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground disabled:pointer-events-none disabled:opacity-50"
+                  disabled={zoomLevel >= 3}
+                >
+                  <Plus className="h-4 w-4" />
+                  {isRTL ? 'تكبير' : 'Zoom In'}
+                </button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
@@ -95,12 +185,22 @@ const ServicesSection = () => {
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-secondary">
+              <a
+                href="https://wa.me/966553737679"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-center"
+              >
                 {isRTL ? 'احجز استشارة' : 'Book Consultation'}
-              </button>
-              <button className="btn-outline">
+              </a>
+              <a
+                href="https://wa.me/966553737679"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline text-center"
+              >
                 {isRTL ? 'تواصل واتساب' : 'WhatsApp Contact'}
-              </button>
+              </a>
             </div>
           </div>
         </div>

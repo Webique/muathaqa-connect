@@ -6,6 +6,7 @@ import khobarImage from '@/assets/city-khobar.jpg';
 import dammamImage from '@/assets/city-dammam.jpg';
 import dhahranImage from '@/assets/city-dhahran.jpg';
 import jubailImage from '@/assets/city-jubail.jpg';
+import ahsaImage from '@/assets/ahsa.jpg';
 
 const FeaturedCities = () => {
   const { t, isRTL } = useLanguage();
@@ -15,6 +16,7 @@ const FeaturedCities = () => {
     dammam: dammamImage,
     dhahran: dhahranImage,
     jubail: jubailImage,
+    ahsa: ahsaImage,
   };
 
   const featuredCities = [
@@ -22,6 +24,7 @@ const FeaturedCities = () => {
     { key: 'dammam', ...cities.dammam },
     { key: 'dhahran', ...cities.dhahran },
     { key: 'jubail', ...cities.jubail },
+    { key: 'ahsa', ...cities.ahsa },
   ];
 
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;

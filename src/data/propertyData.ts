@@ -37,6 +37,21 @@ export const cities = {
       { ar: 'تهامة', en: 'Tihama' },
     ]
   },
+  ahsa: {
+    ar: 'الأحساء',
+    en: 'Al Ahsa',
+    districts: [
+      { ar: 'الهفوف', en: 'Hofuf' },
+      { ar: 'المبرز', en: 'Al-Mubarraz' },
+      { ar: 'جواثا', en: 'Jawatha' },
+      { ar: 'العمران', en: 'Al-Omran' },
+      { ar: 'العيون', en: 'Al-Uyun' },
+      { ar: 'القارة', en: 'Al-Qarah' },
+      { ar: 'الطرف', en: 'Al-Taraf' },
+      { ar: 'الدالوة', en: 'Al-Dalwah' },
+      { ar: 'الشعبة', en: 'Al-Shaabah' },
+    ]
+  },
   dammam: {
     ar: 'الدمام',
     en: 'Dammam',
@@ -160,11 +175,19 @@ export const buildingTypes = [
   { key: 'showroom', ar: 'صالة عرض', en: 'Showroom' },
 ];
 
-export const statistics = [
-  { key: 'contracts', value: 233, ar: 'العقود الموثقة حتى الآن', en: 'Documented Contracts' },
-  { key: 'real_estate', value: 916, ar: 'العقود العقارية', en: 'Real Estate Contracts' },
-  { key: 'authority', value: 183, ar: 'الهيئة العامة للعقار', en: 'General Real Estate Authority' },
-  { key: 'ejar', value: 460, ar: 'منصة إيجار', en: 'Ejar Platform' },
+export type Statistic = {
+  key: string;
+  value: number;
+  ar: string;
+  en: string;
+  unit?: string;
+};
+
+export const statistics: Statistic[] = [
+  { key: 'contracts', value: 233, ar: 'العقود الوساطة', en: 'Brokerage Contracts' },
+  { key: 'real_estate', value: 916, ar: 'عقود منصة إيجار', en: 'Ejar Platform Contracts' },
+  { key: 'authority', value: 183, ar: 'تراخيص إعلانات عقارية', en: 'Real Estate Advertising Licenses' },
+  { key: 'ejar', value: 460, ar: 'اتفاقيات الوساطة لدى منصة إيجار', en: 'Ejar Brokerage Agreements' },
   { key: 'satisfaction', value: 4.6, ar: 'معدل رضا العملاء', en: 'Customer Satisfaction', unit: '★' },
 ];
 
