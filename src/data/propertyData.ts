@@ -275,7 +275,8 @@ export const properties = [
     advertiser: {
       number: '7200640143',
       license: '1200027687'
-    }
+    },
+    addedAt: '2024-10-15T09:00:00Z'
   },
   {
     id: 2,
@@ -317,7 +318,8 @@ export const properties = [
     advertiser: {
       number: '7200640143',
       license: '1200027687'
-    }
+    },
+    addedAt: '2024-11-02T12:30:00Z'
   },
   {
     id: 3,
@@ -358,6 +360,49 @@ export const properties = [
     advertiser: {
       number: '7200640143',
       license: '1200027687'
-    }
+    },
+    addedAt: '2024-11-08T16:45:00Z'
+  },
+  {
+    id: 4,
+    title: {
+      ar: 'تاون هاوس حديث في حي التعاون',
+      en: 'Modern Townhouse in Al Taawon'
+    },
+    location: {
+      ar: 'الخبر، المملكة العربية السعودية',
+      en: 'Khobar, Saudi Arabia'
+    },
+    propertyCode: 'MU-004',
+    images: [
+      '/assets/city-khobar.jpg',
+      '/assets/city-dammam.jpg'
+    ],
+    price: 3200000,
+    area: 260,
+    bedrooms: 4,
+    bathrooms: 4,
+    type: 'townhouse',
+    purpose: 'sale',
+    features: {
+      floors: 2,
+      guestLounge: 1,
+      facade: 'West',
+      streetWidthNorth: 12,
+      dailyLivingRoom: 2,
+      diningRoom: 1,
+      maidRoom: 1,
+      driverRoom: 0,
+      kitchen: 1,
+      storageRoom: 1,
+      elevator: 0
+    },
+    services: ['Electricity', 'Water', 'Sewage'],
+    usage: 'Residential',
+    advertiser: {
+      number: '7200640143',
+      license: '1200027687'
+    },
+    addedAt: '2024-11-11T08:15:00Z'
   }
 ];
