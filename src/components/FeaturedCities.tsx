@@ -101,12 +101,12 @@ const FeaturedCities = () => {
                       {city.districts.length}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
+                  <Link to="/cities" className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
                     <span className={`text-sm font-medium ${isRTL ? 'font-arabic' : ''}`}>
                       {isRTL ? 'استكشف' : 'Explore'}
                     </span>
                     <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </div>
+                  </Link>
                 </div>
 
                 {/* Sample Districts */}
