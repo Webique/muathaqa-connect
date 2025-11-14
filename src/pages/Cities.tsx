@@ -220,14 +220,16 @@ const Cities = () => {
                   {t('filters.city')}
                 </label>
                 <Select
-                  value={filters.city}
-                  onValueChange={(value) => setFilters(prev => ({ ...prev, city: value }))}
+                  value={filters.city || 'all'}
+                  onValueChange={(value) =>
+                    setFilters((prev) => ({ ...prev, city: value === 'all' ? '' : value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t('filters.cityPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{t('filters.cityPlaceholder')}</SelectItem>
+                    <SelectItem value="all">{t('filters.cityPlaceholder')}</SelectItem>
                     {cityOptions.map((city) => (
                       <SelectItem key={city.value} value={city.value}>
                         {isRTL ? city.labelAr : city.labelEn}
