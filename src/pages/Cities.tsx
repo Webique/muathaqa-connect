@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { cityOptions } from '@/constants/cities';
 
 const Cities = () => {
   const { t, isRTL } = useLanguage();
@@ -28,16 +29,30 @@ const Cities = () => {
     bathrooms: ''
   });
 
+  const matchesCity = (property: any, cityValue: string) => {
+    const selectedCity = cityOptions.find(city => city.value === cityValue);
+    if (!selectedCity) return false;
+
+    if (property.city) {
+      return property.city === cityValue;
+    }
+
+    const locationEn = property.location?.en?.toLowerCase() || '';
+    const locationAr = property.location?.ar || '';
+
+    return (
+      locationEn.includes(selectedCity.labelEn.toLowerCase()) ||
+      locationAr.includes(selectedCity.labelAr)
+    );
+  };
+
   // Function to apply filters to properties
   const applyFilters = useCallback((propertiesList: any[]) => {
     let filtered = [...propertiesList];
 
     // Apply filters
     if (filters.city) {
-      filtered = filtered.filter(property => 
-        property.location.en.toLowerCase().includes(filters.city.toLowerCase()) ||
-        property.location.ar.includes(filters.city)
-      );
+      filtered = filtered.filter(property => matchesCity(property, filters.city));
     }
 
     if (filters.type) {
@@ -204,11 +219,22 @@ const Cities = () => {
                 <label className="text-sm font-medium text-foreground mb-2 block">
                   {t('filters.city')}
                 </label>
-                <Input
-                  placeholder={t('filters.cityPlaceholder')}
+                <Select
                   value={filters.city}
-                  onChange={(e) => setFilters(prev => ({ ...prev, city: e.target.value }))}
-                />
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, city: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('filters.cityPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{t('filters.cityPlaceholder')}</SelectItem>
+                    {cityOptions.map((city) => (
+                      <SelectItem key={city.value} value={city.value}>
+                        {isRTL ? city.labelAr : city.labelEn}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>

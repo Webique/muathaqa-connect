@@ -12,6 +12,7 @@ export interface Property {
     ar: string;
     en: string;
   };
+  city?: string;
   propertyCode: string;
   images: string[];
   video?: string;

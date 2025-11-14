@@ -9,6 +9,11 @@ const propertySchema = new mongoose.Schema({
     ar: { type: String, required: false },
     en: { type: String, required: true }
   },
+  city: {
+    type: String,
+    enum: ['jubail', 'dhahran', 'ahsa', 'dammam', 'khobar', 'hofuf'],
+    required: false
+  },
   propertyCode: { 
     type: String, 
     required: true, 
