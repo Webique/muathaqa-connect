@@ -484,7 +484,6 @@ const AdminPage: React.FC = () => {
       residentialArea: '',
       landArea: ''
     });
-    setUploadedFiles([]);
     setShowForm(true);
   };
 
