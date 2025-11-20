@@ -84,9 +84,9 @@ const translations = {
     'about.vision': 'رؤيتنا',
     'about.mission': 'رسالتنا',
     'about.values': 'قيمنا',
-    'about.profile': 'تأسست في 1 مارس 2023 كمؤسسة وطنية متخصصة في إدارة وتسويق العقارات السكنية والتجارية.',
-    'about.vision.text': 'أن نكون من الجهات الرائدة في قطاع العقار بالمملكة من خلال الثقة، الشفافية، وجودة الأداء.',
-    'about.mission.text': 'تقديم خدمات عقارية متكاملة بمهنية وموثوقية، ورفع معايير القطاع وتعزيز الثقة.',
+    'about.profile': 'تأسســت مؤسســـــة مواثقـــــــة العقاريـــــــة في الأول مــن مــارس 2023 كمؤسســــــة وطنيــة متخصصة في إدارة وتســويق العقــارات الســكنية والتجاريــة، حيــث نعتمــد في أعمالنــا علــى أســاليب احترافيــة وتقنيــات حديثــة تــلبي متطلبــات الســوق العقــاري وتواكــب تطوراتــه. يضــم فريقنــا نخبــة مــن الكفــاءات الســعودية المؤهلــة ذات الخبرة العاليــة.',
+    'about.vision.text': 'أن نكــون مــن الجهــات الرائــدة في قطــاع العقــار بالمملكــة، مــن خلال تقديــم خدمــات عقاريــة احترافيــة تعتمــد علــى الثقــة، الشــفافية، وجــودة الأداء، والمســاهمة الفاعلــة في تطويــر الســوق العقــاري وتحقيــق تطلعــات العــملاء والمستثمريــن.',
+    'about.mission.text': 'تقديــم خدمــات عقاريــة متكاملــة ترتكــز علــى الاحترافيــة والموثوقيــة، وتــلبي احتياجــات عملائنــا بكفــاءة عاليــة من خلال كــوادر مؤهلــة وأنظمــة عمــل متطــورة، بمــا يســهم في رفــع مســتوى جــودة القطــاع العقــاري وتعزيــز ثقــة المتعامــلين.',
     
     // Values
     'value.professionalism': 'الاحترافية',
@@ -247,9 +247,9 @@ const translations = {
     'about.vision': 'Our Vision',
     'about.mission': 'Our Mission',
     'about.values': 'Our Values',
-    'about.profile': 'Founded on March 1, 2023 as a national institution specialized in managing and marketing residential and commercial real estate.',
-    'about.vision.text': 'To be one of the leading entities in the real estate sector in the Kingdom through trust, transparency, and quality performance.',
-    'about.mission.text': 'Deliver integrated real estate services with professionalism and reliability, raising sector standards and enhancing trust.',
+    'about.profile': 'Muathaqa Real Estate was founded on March 1, 2023 as a national institution specializing in managing and marketing residential and commercial properties. We rely on professional methods and modern technologies that keep pace with the real estate market, supported by highly qualified Saudi talent.',
+    'about.vision.text': 'To be one of the Kingdom\'s leading real estate entities by delivering professional services built on trust, transparency, and quality performance, while actively contributing to market development and fulfilling the aspirations of clients and investors.',
+    'about.mission.text': 'Provide comprehensive, reliable, and professional real estate services that efficiently meet client needs through qualified teams and advanced systems, thereby elevating the sector\'s quality and strengthening stakeholder confidence.',
     
     // Values
     'value.professionalism': 'Professionalism',
