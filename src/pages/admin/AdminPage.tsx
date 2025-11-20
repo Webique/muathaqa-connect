@@ -17,6 +17,79 @@ const CLOUDINARY_CLOUD_NAME = 'dral2ddhm';
 const CLOUDINARY_API_KEY = '671474332779551';
 const CLOUDINARY_API_SECRET = 'hP5JDgRwFyD-rpHqGcgw-qGCwco';
 
+const toStringArray = (value?: any): string[] => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+      .filter((entry): entry is string => entry.length > 0);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? [trimmed] : [];
+  }
+  return [];
+};
+
+const normalizeServicesList = (services?: Property['services']): string[] => {
+  if (!services) return [];
+  if (Array.isArray(services)) {
+    return toStringArray(services);
+  }
+
+  if (typeof services === 'object' && services !== null && !Array.isArray(services)) {
+    const arabic = toStringArray(services.ar);
+    const english = toStringArray(services.en);
+
+    if (arabic.length > 0) return arabic;
+    if (english.length > 0) return english;
+  }
+
+  return [];
+};
+
+const extractServicesByLocale = (property: Property, locale: 'ar' | 'en'): string[] => {
+  const services = property.services;
+  const specificList =
+    locale === 'ar' ? toStringArray((property as any).servicesAr) : toStringArray((property as any).servicesEn);
+
+  if (specificList.length > 0) return specificList;
+
+  if (Array.isArray(services)) {
+    return locale === 'ar' ? toStringArray(services) : [];
+  }
+
+  if (services && typeof services === 'object') {
+    return toStringArray(services[locale]);
+  }
+
+  return [];
+};
+
+const extractDescription = (property: Property) => {
+  const base = property.description as any;
+  let descAr = (property as any).descriptionAr || '';
+  let descEn = (property as any).descriptionEn || '';
+
+  if (typeof base === 'string') {
+    descAr = descAr || base;
+  } else if (base && typeof base === 'object' && !Array.isArray(base)) {
+    descAr = descAr || base.ar || '';
+    descEn = descEn || base.en || '';
+  }
+
+  return {
+    ar: descAr,
+    en: descEn,
+  };
+};
+
+const parseServicesInput = (input: string) =>
+  input
+    .split(',')
+    .map((service) => service.trim())
+    .filter((service) => service.length > 0);
+
 const AdminPage: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,8 +111,10 @@ const AdminPage: React.FC = () => {
     bathrooms: '',
     type: '',
     purpose: '',
-    description: '',
+    descriptionAr: '',
+    descriptionEn: '',
     services: '',
+    servicesEn: '',
     advertiserNumber: '',
     advertiserLicense: '',
     propertyCode: '',
@@ -340,6 +415,18 @@ const AdminPage: React.FC = () => {
         return baseFeatures;
       };
 
+      const descriptionArValue = formData.descriptionAr.trim();
+      const descriptionEnValue = formData.descriptionEn.trim();
+      const servicesArList = parseServicesInput(formData.services);
+      const servicesEnList = parseServicesInput(formData.servicesEn);
+      const servicesFallback = ['Electricity', 'Water'];
+      const servicesPayload =
+        servicesArList.length > 0
+          ? servicesArList
+          : servicesEnList.length > 0
+            ? servicesEnList
+            : servicesFallback;
+
       const propertyData = {
         title: {
           ar: formData.titleAr.trim() || formData.titleEn.trim(),
@@ -362,8 +449,12 @@ const AdminPage: React.FC = () => {
         usage: formData.type === 'land' || formData.type === 'store' || formData.type === 'office' || formData.type === 'showroom' ? 'Commercial' : 'Residential',
         images: allImages,
         video: videoUrl,
-        description: formData.description.trim() || undefined,
-        services: formData.services ? formData.services.split(',').map(s => s.trim()).filter(Boolean) : ['Electricity', 'Water'],
+        description: descriptionArValue || descriptionEnValue || undefined,
+        descriptionAr: descriptionArValue || undefined,
+        descriptionEn: descriptionEnValue || undefined,
+        services: servicesPayload,
+        servicesAr: servicesArList.length > 0 ? servicesArList : undefined,
+        servicesEn: servicesEnList.length > 0 ? servicesEnList : undefined,
         advertiser: {
           number: formData.advertiserNumber.trim() || '7200640143',
           license: formData.advertiserLicense.trim() || '1200027687'
@@ -428,6 +519,12 @@ const AdminPage: React.FC = () => {
     }
     
     setUploadedFiles(existingFiles);
+
+    const { ar: descriptionAr, en: descriptionEn } = extractDescription(property);
+    const servicesArList =
+      extractServicesByLocale(property, 'ar') || normalizeServicesList(property.services);
+    const servicesEnList = extractServicesByLocale(property, 'en');
+
     setFormData({
       titleEn: property.title.en,
       titleAr: property.title.ar,
@@ -440,8 +537,10 @@ const AdminPage: React.FC = () => {
       bathrooms: property.bathrooms.toString(),
       type: property.type,
       purpose: property.purpose,
-      description: property.description || '',
-      services: property.services.join(', '),
+      descriptionAr: descriptionAr || '',
+      descriptionEn: descriptionEn || '',
+      services: servicesArList.join(', '),
+      servicesEn: servicesEnList.join(', '),
       advertiserNumber: property.advertiser.number,
       advertiserLicense: property.advertiser.license,
       propertyCode: property.propertyCode,
@@ -500,8 +599,10 @@ const AdminPage: React.FC = () => {
       bathrooms: '',
       type: '',
       purpose: '',
-      description: '',
+      descriptionAr: '',
+      descriptionEn: '',
       services: '',
+      servicesEn: '',
       advertiserNumber: '',
       advertiserLicense: '',
       propertyCode: '',
@@ -799,15 +900,27 @@ const AdminPage: React.FC = () => {
                 {/* Description */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-semibold text-gray-900">الوصف</h3>
-                  <div>
-                    <Label htmlFor="description">وصف العقار</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      placeholder="قم بوصف مميزات العقار، مزايا الموقع، والنقاط البارزة..."
-                      rows={4}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="descriptionAr">وصف العقار (بالعربية)</Label>
+                      <Textarea
+                        id="descriptionAr"
+                        value={formData.descriptionAr}
+                        onChange={(e) => handleInputChange('descriptionAr', e.target.value)}
+                        placeholder="قم بوصف مميزات العقار، مزايا الموقع، والنقاط البارزة..."
+                        rows={4}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="descriptionEn">Property Description (English)</Label>
+                      <Textarea
+                        id="descriptionEn"
+                        value={formData.descriptionEn}
+                        onChange={(e) => handleInputChange('descriptionEn', e.target.value)}
+                        placeholder="Describe the property highlights in English..."
+                        rows={4}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1239,15 +1352,27 @@ const AdminPage: React.FC = () => {
                 </div>
 
                 {/* Services */}
-                <div>
-                  <Label htmlFor="services">الخدمات (مفصولة بفاصلة)</Label>
-                  <Textarea
-                    id="services"
-                    value={formData.services}
-                    onChange={(e) => handleInputChange('services', e.target.value)}
-                    placeholder="كهرباء، ماء، صرف صحي"
-                    rows={2}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="services">الخدمات (مفصولة بفاصلة)</Label>
+                    <Textarea
+                      id="services"
+                      value={formData.services}
+                      onChange={(e) => handleInputChange('services', e.target.value)}
+                      placeholder="كهرباء، ماء، صرف صحي"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="servicesEn">Services (comma-separated)</Label>
+                    <Textarea
+                      id="servicesEn"
+                      value={formData.servicesEn}
+                      onChange={(e) => handleInputChange('servicesEn', e.target.value)}
+                      placeholder="Fully furnished, Split AC, Fiber internet"
+                      rows={2}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">

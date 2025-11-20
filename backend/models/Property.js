@@ -22,7 +22,9 @@ const propertySchema = new mongoose.Schema({
   },
   images: [{ type: String }], // Base64 encoded images
   video: { type: String },
-  description: { type: String }, // Property description
+  description: { type: String }, // Backward-compatible description
+  descriptionAr: { type: String },
+  descriptionEn: { type: String },
   price: { 
     type: Number, 
     required: true,
@@ -69,6 +71,8 @@ const propertySchema = new mongoose.Schema({
     elevator: { type: Number, default: 0 }
   },
   services: [{ type: String }],
+  servicesAr: [{ type: String }],
+  servicesEn: [{ type: String }],
   usage: { 
     type: String, 
     required: true,

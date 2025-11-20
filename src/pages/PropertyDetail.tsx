@@ -89,6 +89,72 @@ const PropertyDetail = () => {
     );
   }
 
+  const toArray = (value: any): string[] => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value
+        .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+        .filter((entry): entry is string => entry.length > 0);
+    }
+    return [];
+  };
+
+  const getLocalizedDescription = () => {
+    const descValue = property.description as any;
+    const descObject =
+      descValue && typeof descValue === 'object' && !Array.isArray(descValue)
+        ? descValue
+        : undefined;
+
+    const fallback =
+      typeof descValue === 'string'
+        ? descValue
+        : descObject?.ar || descObject?.en || '';
+
+    const altAr =
+      property.descriptionAr ||
+      (property as any)?.description_ar ||
+      descObject?.ar ||
+      '';
+
+    const altEn =
+      property.descriptionEn ||
+      (property as any)?.description_en ||
+      descObject?.en ||
+      '';
+
+    const primary = isRTL ? altAr : altEn;
+    const secondary = isRTL ? altEn : altAr;
+
+    return (primary && primary.trim()) || (secondary && secondary.trim()) || fallback || '';
+  };
+
+  const getLocalizedServices = () => {
+    const rawServices = property.services as any;
+
+    const baseList = Array.isArray(rawServices)
+      ? toArray(rawServices)
+      : toArray(rawServices?.ar) || toArray(rawServices?.en);
+
+    const arabicList =
+      toArray(property.servicesAr) ||
+      (!Array.isArray(rawServices) ? toArray(rawServices?.ar) : []);
+
+    const englishList =
+      toArray(property.servicesEn) ||
+      (!Array.isArray(rawServices) ? toArray(rawServices?.en) : []);
+
+    const primary = isRTL ? arabicList : englishList;
+    const fallbackList = isRTL ? englishList : arabicList;
+
+    if (primary.length > 0) return primary;
+    if (fallbackList.length > 0) return fallbackList;
+    return baseList;
+  };
+
+  const localizedDescription = getLocalizedDescription();
+  const localizedServices = getLocalizedServices();
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US').format(price);
   };
@@ -440,7 +506,7 @@ const PropertyDetail = () => {
                 className="text-muted-foreground leading-relaxed whitespace-pre-wrap break-words"
                 style={{ whiteSpace: 'pre-wrap' }}
               >
-                {property.description || (isRTL ? 'لا يوجد وصف متاح' : 'No description available')}
+                {localizedDescription || (isRTL ? 'لا يوجد وصف متاح' : 'No description available')}
               </div>
             </div>
 
@@ -486,13 +552,13 @@ const PropertyDetail = () => {
             </div>
 
             {/* Services */}
-            {property.services && property.services.length > 0 && (
+            {localizedServices.length > 0 && (
               <div className="bg-card border border-border rounded-2xl p-6">
                 <h3 className="text-xl font-bold text-foreground mb-4">
                   {t('property.services')}
                 </h3>
                 <div className="space-y-2">
-                  {property.services.map((service: string, index: number) => (
+                  {localizedServices.map((service: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                       <span className="text-muted-foreground">{service}</span>

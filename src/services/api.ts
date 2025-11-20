@@ -2,6 +2,16 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // Types
+export type LocalizedString = string | { ar?: string; en?: string } | null | undefined;
+export type LocalizedStringArray =
+  | string[]
+  | {
+      ar?: string[];
+      en?: string[];
+    }
+  | null
+  | undefined;
+
 export interface Property {
   _id: string;
   title: {
@@ -16,7 +26,9 @@ export interface Property {
   propertyCode: string;
   images: string[];
   video?: string;
-  description?: string;
+  description?: LocalizedString;
+  descriptionEn?: string;
+  descriptionAr?: string;
   price: number;
   area: number;
   bedrooms: number;
@@ -36,7 +48,9 @@ export interface Property {
     storageRoom: number;
     elevator: number;
   };
-  services: string[];
+  services: LocalizedStringArray;
+  servicesEn?: string[];
+  servicesAr?: string[];
   usage: string;
   advertiser: {
     number: string;
