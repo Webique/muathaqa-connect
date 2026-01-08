@@ -88,9 +88,15 @@ const Header = () => {
               <span className="font-medium">{language === 'ar' ? 'EN' : 'العربية'}</span>
             </Button>
             
-            <Button variant="secondary" size="sm" className="font-medium">
-              {t('contact.title')}
-            </Button>
+            <a
+              href="https://wa.me/966551888193"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="secondary" size="sm" className="font-medium">
+                {t('contact.title')}
+              </Button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -139,9 +145,16 @@ const Header = () => {
                 <span>{language === 'ar' ? 'English' : 'العربية'}</span>
               </Button>
               
-              <Button variant="secondary" onClick={closeMobileMenu}>
-                {t('contact.title')}
-              </Button>
+              <a
+                href="https://wa.me/966551888193"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeMobileMenu}
+              >
+                <Button variant="secondary" className="w-full">
+                  {t('contact.title')}
+                </Button>
+              </a>
             </div>
           </nav>
         </div>

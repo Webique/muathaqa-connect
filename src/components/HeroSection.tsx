@@ -45,15 +45,21 @@ const HeroSection = () => {
               {t('hero.cta.search')}
             </Button>
             
-            <Button 
-              variant="outline"
-              size="lg"
-              className="bg-white/10 border-white/30 text-white hover:bg-white hover:text-secondary backdrop-blur-sm text-lg px-8 py-4 animate-scale-in"
-              style={{ animationDelay: '0.4s' }}
+            <a
+              href="https://wa.me/966551888193"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Phone className="h-5 w-5 mr-2" />
-              {t('hero.cta.contact')}
-            </Button>
+              <Button 
+                variant="outline"
+                size="lg"
+                className="bg-white/10 border-white/30 text-white hover:bg-white hover:text-secondary backdrop-blur-sm text-lg px-8 py-4 animate-scale-in"
+                style={{ animationDelay: '0.4s' }}
+              >
+                <Phone className="h-5 w-5 mr-2" />
+                {t('hero.cta.contact')}
+              </Button>
+            </a>
           </div>
         </div>
 
