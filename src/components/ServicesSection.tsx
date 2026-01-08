@@ -186,7 +186,7 @@ const ServicesSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://wa.me/966553737679"
+                href="https://wa.me/966551888193"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary text-center"
@@ -194,7 +194,7 @@ const ServicesSection = () => {
                 {isRTL ? 'احجز استشارة' : 'Book Consultation'}
               </a>
               <a
-                href="https://wa.me/966553737679"
+                href="https://wa.me/966551888193"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline text-center"
